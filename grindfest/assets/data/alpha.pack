@@ -1,0 +1,222 @@
+
+alpha.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+castlebg
+  rotate: false
+  xy: 1, 735
+  size: 800, 240
+  orig: 800, 240
+  offset: 0, 0
+  index: -1
+bluebg
+  rotate: false
+  xy: 1, 493
+  size: 400, 240
+  orig: 400, 240
+  offset: 0, 0
+  index: -1
+logo
+  rotate: false
+  xy: 803, 825
+  size: 150, 150
+  orig: 150, 150
+  offset: 0, 0
+  index: -1
+GoblinRun0000
+  rotate: false
+  xy: 1, 411
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0001
+  rotate: false
+  xy: 403, 653
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0002
+  rotate: false
+  xy: 803, 743
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0003
+  rotate: false
+  xy: 1, 329
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0004
+  rotate: false
+  xy: 83, 411
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0005
+  rotate: false
+  xy: 403, 571
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0006
+  rotate: false
+  xy: 485, 653
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+GoblinRun0007
+  rotate: false
+  xy: 1, 247
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterIdle0000
+  rotate: false
+  xy: 83, 329
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterIdle0001
+  rotate: false
+  xy: 165, 411
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterIdle0002
+  rotate: false
+  xy: 485, 571
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterIdle0003
+  rotate: false
+  xy: 567, 653
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0000
+  rotate: false
+  xy: 1, 165
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0001
+  rotate: false
+  xy: 83, 247
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0002
+  rotate: false
+  xy: 165, 329
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0003
+  rotate: false
+  xy: 247, 411
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0004
+  rotate: false
+  xy: 567, 571
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0005
+  rotate: false
+  xy: 649, 653
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0006
+  rotate: false
+  xy: 1, 83
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun+Attack0007
+  rotate: false
+  xy: 83, 165
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0000
+  rotate: false
+  xy: 165, 247
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0001
+  rotate: false
+  xy: 247, 329
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0002
+  rotate: false
+  xy: 649, 571
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0003
+  rotate: false
+  xy: 1, 1
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0004
+  rotate: false
+  xy: 83, 83
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0005
+  rotate: false
+  xy: 165, 165
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0006
+  rotate: false
+  xy: 247, 247
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+MainCharacterRun0007
+  rotate: false
+  xy: 83, 1
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
