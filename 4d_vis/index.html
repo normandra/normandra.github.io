@@ -29,8 +29,8 @@
     for (let i = 1; i <= nodeSize; i++){
         for ( let j = 1; j <= nodeSize; j++){
             console.log('adding edge')
-            if (Math.random() >= 0.95 && i != j){
-                edges.add({from: i, to: j})
+            if (Math.random() >= 0.96 && i != j){
+                edges.add({from: i, to: j, arrows:'to'})
             }
         }
     }
@@ -59,6 +59,7 @@
             font:{
                 color: 'white'
             },
+            fixed: false
         }
     };
 
