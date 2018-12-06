@@ -17,7 +17,7 @@
 
 <form action="javascript:parseJson(test.value)">
     Json:<br>
-    <input type="text" name="test" id="test" value="aaa">
+    <input type="text" name="test" id="test" value="">
     <br>
     <input type="submit" value="Submit">
   </form> 
@@ -48,18 +48,16 @@
 
         for (let i = 0; i < jsonObject.length; i++){
             var obj = jsonObject[i];
-            nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: Math.round(Math.random()) })
+            if(obj.answer.booleanAnswer != null){
+                nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: obj.answer.booleanAnswer })
+            }
         }
 
-        for (let i = 0; i < jsonObject.length; i++){
-            for ( let j = 0; j < jsonObject.length; j++){
+        for (let i = 0; i < nodes.length; i++){
+            for ( let j = 0; j < nodes.length; j++){
                 if( i != j){
                     var cluster = nodes.get(i)
                     var clusterOther = nodes.get(j)
-                    
-                    if(clusterOther == null){
-                        console.log(j)
-                    }
 
                     if(cluster == null || clusterOther == null || cluster.group == null || clusterOther.group == null){
                         continue;
@@ -92,35 +90,37 @@
         }
 
         // create a network
-    var container = document.getElementById('mynetwork');
+        var container = document.getElementById('mynetwork');
 
-    // provide the data in the vis format
-    var data = {
-        nodes: nodes,
-        edges: edges
-    };
-    var options = {
-        nodes: {
-            color: 'white',
-            shape: 'dot',
-            font:{
-                color: 'white'
-            },
-            fixed: false
-        }
-    };
+        // provide the data in the vis format
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {
+            nodes: {
+                color: 'white',
+                shape: 'dot',
+                font:{
+                    color: 'white'
+                },
+                fixed: false
+            }
+        };
 
-    // initialize your network!
-    var network = new vis.Network(container, data, options);
+        // initialize your network!
+        var network = new vis.Network(container, data, options);
 
-    nodes.forEach(node => {
-        edgeSize = network.getConnectedEdges(node.id).length
-        network.clustering.updateClusteredNode(node.id, {value: edgeSize * edgeSize})
-    });
+        nodes.forEach(node => {
+            edgeSize = network.getConnectedEdges(node.id).length
+            network.clustering.updateClusteredNode(node.id, {value: edgeSize * edgeSize})
+        });
 
-    network.on("click", function (params) {
-        console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
-    });
+        network.on("click", function (params) {
+            console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
+        });
+
+        console.log(edges.length)
 
 
     }
