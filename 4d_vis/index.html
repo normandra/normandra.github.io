@@ -48,7 +48,7 @@
 
         for (let i = 0; i < jsonObject.length; i++){
             var obj = jsonObject[i];
-            if(obj.answer.booleanAnswer != null){
+            if(obj.answer.booleanAnswer != ""){
                 nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: obj.answer.booleanAnswer })
             }
         }
@@ -66,18 +66,18 @@
                     switch(cluster.group){
                         case 3:
                             if (clusterOther.group == 1){
-                                if(cluster.value == 0 && clusterOther.value == 1){
+                                if(cluster.value == "false" && clusterOther.value == "true"){
                                     edges.add({from: i, to: j, arrows:'to'})
                                 }
                             }
                             break;
                         case 2:
                             if (clusterOther.group == 1){
-                                if(cluster.value == 0 && clusterOther.value == 1){
+                                if(cluster.value == "false" && clusterOther.value == "true"){
                                     edges.add({from: i, to: j, arrows:'to'})
                                 }
                             }else if(clusterOther.group == 3){
-                                if(cluster.value == 0 && clusterOther.value == 1){
+                                if(cluster.value == "false" && clusterOther.value == "true"){
                                     edges.add({from: i, to: j, arrows:'to'})
                                 }
                             }
