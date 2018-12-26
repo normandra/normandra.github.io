@@ -1,0 +1,19 @@
+{
+  "name": "4d_vis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "cytoscape": "^3.3.1",
+    "ngraph.centrality": "^0.3.0",
+    "ngraph.graph": "^0.0.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "browserify cytoo.js viss.js --standalone parseJson -o bundle.js -v",
+    "watch": "watchify cytoo.js viss.js --standalone parseJson -o bundle.js -v"
+  },
+  "author": "",
+  "license": "ISC"
+}

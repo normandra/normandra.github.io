@@ -1,6 +1,8 @@
 <html>
+
 <head>
     <script type="text/javascript" src="./vis.min.js"></script>
+    <script src="bundle.js"></script>
     <link href="./vis.min.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
@@ -12,135 +14,25 @@
         }
     </style>
 </head>
+
 <body>
-<div id="mynetwork"></div>
+    <div id="mynetwork"></div>
 
-<form action="javascript:parseJson(test.value)">
-    Json:<br>
-    <input type="text" name="test" id="test" value="">
-    <br>
-    <input type="submit" value="Submit">
-  </form> 
+    <form action="javascript:parseJson.visjs(test.value)">
+        Json:<br>
+        <input type="text" name="test" id="test" value="">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
 
-<script type="text/javascript">
-
-    var dict = {
-        1:1,
-        2:2,
-        3:3,
-        4:3,
-        5:3,
-        6:8,
-        7:8,
-        8:8,
-        9:8,
-    }
-
-    //group 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
-    function parseJson(jsonObject){
-        jsonObject = JSON.parse(jsonObject)
-
-        //generate nodes
-        var nodes = new vis.DataSet()
-        var edges = new vis.DataSet()
-
-        for (let i = 0; i < jsonObject.length; i++){
-            var obj = jsonObject[i];
-            if(obj.answer.booleanAnswer != ""){
-                nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: obj.answer.booleanAnswer })
-            }else{
-                if(i % 2 == 0){
-                    nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: "false" })  
-                }else{
-                    nodes.add({id: i, label: obj.label, group: dict[obj.cluster], value: "true" })  
-                }
-            }
-        }
-
-        for (let i = 0; i < nodes.length; i++){
-            for ( let j = 0; j < nodes.length; j++){
-                if( i != j){
-                    var cluster = nodes.get(i)
-                    var clusterOther = nodes.get(j)
-
-                    if(cluster == null || clusterOther == null || cluster.group == null || clusterOther.group == null){
-                        continue;
-                    }
-
-                    switch(cluster.group){
-                        case 3:
-                            if (clusterOther.group == 1){
-                                if(cluster.value == "false" && clusterOther.value == "true"){
-                                    edges.add({from: i, to: j, arrows:'to',color: {color: 'red'}})
-                                }else{
-                                    edges.add({from: i, to: j,color: {color: 'blue'}})
-                                }
-                            }
-                            break;
-                        case 2:
-                            if (clusterOther.group == 1){
-                                if(cluster.value == "false" && clusterOther.value == "true"){
-                                    edges.add({from: i, to: j, arrows:'to',color: {color: 'red'}})
-                                }else{
-                                    edges.add({from: i, to: j,color: {color: 'blue'}})
-                                }
-                            }else if(clusterOther.group == 3){
-                                if(cluster.value == "false" && clusterOther.value == "true"){
-                                    edges.add({from: i, to: j, arrows:'to',color: {color: 'red'}})
-                                }else{
-                                    edges.add({from: i, to: j,color: {color: 'blue'}})
-                                }
-                            }
-                            break;
-                        default:
-
-                    }
-                }
-            }
-        }
-
-        // create a network
-        var container = document.getElementById('mynetwork');
-
-        // provide the data in the vis format
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
-        var options = {
-            nodes: {
-                shape: 'dot',
-                font:{
-                    color: 'black',
-                    size: 40
-                },
-                fixed: false
-            },
-            edges: {
-                length: 4000
-            }
-        };
-
-        // initialize your network!
-        var network = new vis.Network(container, data, options);
-
-        nodes.forEach(node => {
-            edgeSize = network.getConnectedEdges(node.id).length
-            network.clustering.updateClusteredNode(node.id, {value: edgeSize * edgeSize})
-        });
-
-        network.on("click", function (params) {
-            console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
-        });
-
-        console.log(edges.length)
+    <form action="javascript:parseJson.cytoo(test.value)">
+        Json:<br>
+        <input type="text" name="test" id="test" value="">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
 
 
-    }
-
-    // console.log(network.getConnectedNodes(2).length)
-
-
-</script>
 </body>
+
 </html>
