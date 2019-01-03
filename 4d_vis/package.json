@@ -11,8 +11,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "browserify cytoo.js viss.js --standalone parseJson -o bundle.js -v",
-    "watch": "watchify cytoo.js viss.js --standalone parseJson -o bundle.js -v"
+    "bundle": "browserify viss.js --standalone parseJson -o bundle.js -v",
+    "watch": "watchify viss.js --standalone parseJson -o bundle.js -v"
   },
   "author": "",
   "license": "ISC"

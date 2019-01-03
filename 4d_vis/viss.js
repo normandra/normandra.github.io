@@ -7,32 +7,35 @@ var edges = new vis.DataSet()
 
 
 var dict = {
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 3,
-    5: 3,
-    6: 8,
-    7: 8,
-    8: 8,
-    9: 8,
+    "exogene-anforderung": 1,
+    "endogene-anforderung": 2,
+    "funktion": 3,
+    "nutzungszweck": 4,
+    "exogene-anforderung-negativ": 5,
+    "endogene-anforderung-negativ": 6,
+    "funktion-negativ": 7,
+    "nutzungszweck-negativ": 8,
 }
 
 //group 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
 module.exports.visjs = function (jsonObject) {
     jsonObject = JSON.parse(jsonObject)
 
+    // convert to ngraph notation
     for (let i = 0; i < jsonObject.length; i++) {
         var obj = jsonObject[i];
-        if (obj.answer.booleanAnswer != "") {
-            nodes.add({ id: i, label: obj.label, group: dict[obj.cluster], value: obj.answer.booleanAnswer })
-        } else {
-            if (i % 2 === 0) {
-                nodes.add({ id: i, label: obj.label, group: dict[obj.cluster], value: "false" })
-            } else {
-                nodes.add({ id: i, label: obj.label, group: dict[obj.cluster], value: "true" })
-            }
+
+        if(obj.cluster == null){
+            continue;
         }
+
+        var answer = obj.answers[0].booleanAnswer
+        if(obj.cluster.negative){
+            answer = !answer
+        }
+
+        nodes.add({ id: i, label: obj.name, group: dict[obj.cluster.name], value: answer })
+
     }
 
     for (let i = 0; i < nodes.length; i++) {
@@ -44,32 +47,81 @@ module.exports.visjs = function (jsonObject) {
                 if (cluster == null || clusterOther == null || cluster.group == null || clusterOther.group == null) {
                     continue;
                 }
-
                 switch (cluster.group) {
-                    case 3:
-                        if (clusterOther.group == 1) {
-                            if (cluster.value == "false" && clusterOther.value == "true") {
+                    case 4:
+                        if (clusterOther.group == 4) {
+                            // if (cluster.value == false && clusterOther.value == true) {
+                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                            //     g.addLink(cluster.label, clusterOther.label)
+                            // }
+                        }else if (clusterOther.group == 3) {
+                            if (cluster.value == true && clusterOther.value == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
-                            } else {
-                                edges.add({ from: i, to: j, color: { color: 'blue' } })
+                            }
+                        }else if (clusterOther.group == 2 || clusterOther.group == 1) {
+                            if (cluster.value == true && clusterOther.value == false) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }
+                        break;
+                    case 3:
+                        if (clusterOther.group == 4) {
+                            if (cluster.value == false && clusterOther.value == true) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }else if (clusterOther.group == 3) {
+                            // if (cluster.value == true && clusterOther.value == false) {
+                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                            //     g.addLink(cluster.label, clusterOther.label)
+                            // }
+                        }else if (clusterOther.group == 2 || clusterOther.group == 1) {
+                            if (cluster.value == true && clusterOther.value == false) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }
+                        break;
+                    case 1:
+                        if (clusterOther.group == 4) {
+                            if (cluster.value == false && clusterOther.value == true) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }else if (clusterOther.group == 3) {
+                            if (cluster.value == false && clusterOther.value == true) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }else if (clusterOther.group == 2) {
+                            if (cluster.value == false && clusterOther.value == true) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
                             }
                         }
                         break;
                     case 2:
-                        if (clusterOther.group == 1) {
-                            if (cluster.value == "false" && clusterOther.value == "true") {
+                        if (clusterOther.group == 4) {
+                            if (cluster.value == false && clusterOther.value == true) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
-                            } else {
-                                edges.add({ from: i, to: j, color: { color: 'blue' } })
                             }
-                        } else if (clusterOther.group == 3) {
-                            if (cluster.value == "false" && clusterOther.value == "true") {
+                        }else if (clusterOther.group == 3) {
+                            if (cluster.value == false && clusterOther.value == true) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
-                            } else {
-                                edges.add({ from: i, to: j, color: { color: 'blue' } })
+                            }
+                        }else if (clusterOther.group == 1) {
+                            if (cluster.value == true && clusterOther.value == false) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
+                            }
+                        }else if (clusterOther.group == 2) {
+                            if ((cluster.value == true && clusterOther.value == false) || (cluster.value == false && clusterOther.value == false)) {
+                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                g.addLink(cluster.label, clusterOther.label)
                             }
                         }
                         break;
@@ -98,7 +150,7 @@ module.exports.visjs = function (jsonObject) {
             fixed: false
         },
         edges: {
-            length: 4000
+            length: 1000
         }
     };
 
