@@ -1018,6 +1018,8 @@ var g = require('ngraph.graph')();
 //generate nodes
 var nodes = new vis.DataSet()
 var edges = new vis.DataSet()
+var completeEdges = new vis.DataSet()
+var network
 
 
 var dict = {
@@ -1029,6 +1031,68 @@ var dict = {
     "endogene-anforderung-negativ": 6,
     "funktion-negativ": 7,
     "nutzungszweck-negativ": 8,
+}
+
+module.exports.showGraph = function () {
+    var container = document.getElementById('mynetwork');
+
+    // provide the data in the vis format
+    var data = {
+        nodes: nodes,
+        edges: completeEdges
+    };
+    var options = {
+        nodes: {
+            shape: 'dot',
+        },
+        physics: {
+            forceAtlas2Based: {
+                gravitationalConstant: -26,
+                centralGravity: 0.005,
+                springLength: 230,
+                springConstant: 0.18
+            },
+            maxVelocity: 146,
+            solver: 'forceAtlas2Based',
+            timestep: 0.35,
+            stabilization: {iterations: 150}
+        }
+    };
+
+
+    network = new vis.Network(container, data, options)
+}
+
+module.exports.showComplete = function () {
+    // create a network
+    completeEdges.forEach(edge => {
+        completeEdges.update([{ id: edge.id}])
+    })
+
+}
+
+module.exports.showConflicts = function () {
+    // create a network
+    completeEdges.forEach(edge => {
+        if(!edge.actual){
+            completeEdges.update([{ id: edge.id, color: "#ccc"}])
+        }
+    })
+
+}
+
+module.exports.cenBetween = function () {
+    //recalculate for centrality
+    a = centrality.betweenness(g)
+    nodes.forEach(node => {
+        edgeSize = network.getConnectedEdges(node.id).length
+        if (edgeSize > 0) {
+            nodes.update({ id: node.id, boolAns: a[node.label] })
+        } else {
+            nodes.remove(node.id)
+        }
+        // network.clustering.updateClusteredNode(node.id, {size: edgeSize * edgeSize * 10000})
+    });
 }
 
 //group 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
@@ -1048,13 +1112,16 @@ module.exports.visjs = function (jsonObject) {
             answer = !answer
         }
 
-        nodes.add({ id: i, label: obj.name, group: dict[obj.cluster.name], value: answer })
+        nodes.add({ id: i, name: obj.name, label: obj.label, group: dict[obj.cluster.name], boolAns: answer,value: 3 })
 
     }
+
+    counter = 0
 
     for (let i = 0; i < nodes.length; i++) {
         for (let j = 0; j < nodes.length; j++) {
             if (i != j) {
+                counter++
                 var cluster = nodes.get(i)
                 var clusterOther = nodes.get(j)
 
@@ -1064,79 +1131,121 @@ module.exports.visjs = function (jsonObject) {
                 switch (cluster.group) {
                     case 4:
                         if (clusterOther.group == 4) {
-                            // if (cluster.value == false && clusterOther.value == true) {
+                            // if (cluster.boolAns == false && clusterOther.boolAns == true) {
                             //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                             //     g.addLink(cluster.label, clusterOther.label)
                             // }
                         }else if (clusterOther.group == 3) {
-                            if (cluster.value == true && clusterOther.value == false) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
                         }else if (clusterOther.group == 2 || clusterOther.group == 1) {
-                            if (cluster.value == true && clusterOther.value == false) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
                         }
                         break;
                     case 3:
                         if (clusterOther.group == 4) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 3) {
-                            // if (cluster.value == true && clusterOther.value == false) {
+                            // if (cluster.boolAns == true && clusterOther.boolAns == false) {
                             //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                             //     g.addLink(cluster.label, clusterOther.label)
                             // }
                         }else if (clusterOther.group == 2 || clusterOther.group == 1) {
-                            if (cluster.value == true && clusterOther.value == false) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }
                         break;
                     case 1:
                         if (clusterOther.group == 4) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 3) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 2) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }
                         break;
                     case 2:
                         if (clusterOther.group == 4) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 3) {
-                            if (cluster.value == false && clusterOther.value == true) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 1) {
-                            if (cluster.value == true && clusterOther.value == false) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }else if (clusterOther.group == 2) {
-                            if ((cluster.value == true && clusterOther.value == false) || (cluster.value == false && clusterOther.value == false)) {
+                            var real = false
+                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
                                 edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
                                 g.addLink(cluster.label, clusterOther.label)
+                                real = true
                             }
+                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
+
                         }
                         break;
                     default:
@@ -1145,51 +1254,10 @@ module.exports.visjs = function (jsonObject) {
             }
         }
     }
-
-    // create a network
-    var container = document.getElementById('mynetwork');
-
-    // provide the data in the vis format
-    var data = {
-        nodes: nodes,
-        edges: edges
-    };
-    var options = {
-        nodes: {
-            shape: 'dot',
-            font: {
-                color: 'black',
-                size: 40
-            },
-            fixed: false
-        },
-        edges: {
-            length: 1000
-        }
-    };
-
-    // initialize your network!
-    var network = new vis.Network(container, data, options);
-
-    a = centrality.betweenness(g)
-    nodes.forEach(node => {
-        edgeSize = network.getConnectedEdges(node.id).length
-        if (edgeSize > 0) {
-            nodes.update({ id: node.id, value: a[node.label] })
-        } else {
-            nodes.remove(node.id)
-        }
-        // network.clustering.updateClusteredNode(node.id, {size: edgeSize * edgeSize * 10000})
-    });
-
-    network.on("click", function (params) {
-        console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
-    });
-
     console.log(edges.length)
-    //console.log(centrality.degree(g))
-    //console.log(centrality.betweenness(g))
 }
+
+
 
 // console.log(network.getConnectedNodes(2).length)
 },{"ngraph.centrality":1,"ngraph.graph":7}]},{},[8])(8)
