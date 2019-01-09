@@ -1044,29 +1044,39 @@ module.exports.showGraph = function () {
     var options = {
         nodes: {
             shape: 'dot',
+            color: {
+                background: "red"
+            },
+            group: undefined
         },
         physics: {
-            forceAtlas2Based: {
-                gravitationalConstant: -26,
-                centralGravity: 0.005,
-                springLength: 230,
-                springConstant: 0.18
+            enabled : true,
+            barnesHut: {
+                avoidOverlap: 1,
+                springConstant: 0
             },
-            maxVelocity: 146,
-            solver: 'forceAtlas2Based',
-            timestep: 0.35,
-            stabilization: {iterations: 150}
+            stabilization: {
+                iterations: 100
+            }
+        },
+        edges:{
+            smooth: {
+                enabled: false
+            }
         }
     };
 
 
     network = new vis.Network(container, data, options)
+    network.on("stabilizationIterationsDone", function () {
+        network.setOptions( { physics: false } );
+    });
 }
 
 module.exports.showComplete = function () {
     // create a network
     completeEdges.forEach(edge => {
-        completeEdges.update([{ id: edge.id}])
+        completeEdges.update([{ id: edge.id, color: {color: "#ccc"}}])
     })
 
 }
@@ -1075,7 +1085,9 @@ module.exports.showConflicts = function () {
     // create a network
     completeEdges.forEach(edge => {
         if(!edge.actual){
-            completeEdges.update([{ id: edge.id, color: "#ccc"}])
+            completeEdges.update([{ id: edge.id, color:{color : "#ccc"}}])
+        }else{
+            completeEdges.update([{ id: edge.id, color: {color: "red"}}])
         }
     })
 
@@ -1255,6 +1267,7 @@ module.exports.visjs = function (jsonObject) {
         }
     }
     console.log(edges.length)
+    this.showGraph()
 }
 
 
