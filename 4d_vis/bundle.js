@@ -1043,14 +1043,10 @@ module.exports.showGraph = function () {
     };
     var options = {
         nodes: {
-            shape: 'dot',
-            color: {
-                background: "red"
-            },
-            group: undefined
+            shape: 'dot'
         },
         physics: {
-            enabled : true,
+            enabled: true,
             barnesHut: {
                 avoidOverlap: 1,
                 springConstant: 0
@@ -1059,7 +1055,7 @@ module.exports.showGraph = function () {
                 iterations: 100
             }
         },
-        edges:{
+        edges: {
             smooth: {
                 enabled: false
             }
@@ -1069,25 +1065,153 @@ module.exports.showGraph = function () {
 
     network = new vis.Network(container, data, options)
     network.on("stabilizationIterationsDone", function () {
-        network.setOptions( { physics: false } );
+        network.setOptions({ physics: false });
+    });
+
+
+    network.on('click', function (properties) {
+        var ids = properties.nodes;
+        var clickedNodes = nodes.get(ids);
+        clickedNodes.forEach(node => {
+            console.log(node.id + "," + node.label + "," + node.boolAns)
+            newAns = !node.boolAns
+            nodes.update({ id: node.id, boolAns: newAns })
+
+
+            completeEdges.clear()
+            let counter = 0
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = 0; j < nodes.length; j++) {
+                    if (i !== j) {
+                        counter++
+                        var cluster = nodes.get(i)
+                        var clusterOther = nodes.get(j)
+
+                        if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
+                            continue
+                        }
+
+                        let real
+
+                        switch (cluster.cluster) {
+                            case 4:
+                                if (clusterOther.cluster === 4) {
+                                    // if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                    //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                                    //     g.addLink(cluster.label, clusterOther.label)
+                                    // }
+                                } else if (clusterOther.cluster === 3) {
+                                    real = false
+                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
+                                    real = false
+                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                }
+                                break
+                            case 3:
+                                if (clusterOther.cluster === 4) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 3) {
+                                    // if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                    //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    //     g.addLink(cluster.label, clusterOther.label)
+                                    // }
+                                } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
+                                    real = false
+                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                }
+                                break
+                            case 1:
+                                if (clusterOther.cluster === 4) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 3) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 2) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                }
+                                break
+                            case 2:
+                                if (clusterOther.cluster === 4) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 3) {
+                                    real = false
+                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 1) {
+                                    real = false
+                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                } else if (clusterOther.cluster === 2) {
+                                    real = false
+                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                        real = true
+                                    }
+                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                }
+                                break
+                            default:
+                        }
+                    }
+                }
+            }
+
+        })
     });
 }
 
 module.exports.showComplete = function () {
     // create a network
     completeEdges.forEach(edge => {
-        completeEdges.update([{ id: edge.id, color: {color: "#ccc"}}])
+        completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
     })
+
+    nodes.forEach(node => {
+        nodes.update({ id: node.id, hidden: false, value: 1 })
+
+    });
 
 }
 
 module.exports.showConflicts = function () {
     // create a network
     completeEdges.forEach(edge => {
-        if(!edge.actual){
-            completeEdges.update([{ id: edge.id, color:{color : "#ccc"}}])
-        }else{
-            completeEdges.update([{ id: edge.id, color: {color: "red"}}])
+        if (!edge.actual) {
+            completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
+        } else {
+            completeEdges.update([{ id: edge.id, color: { color: "red" } }])
         }
     })
 
@@ -1095,19 +1219,207 @@ module.exports.showConflicts = function () {
 
 module.exports.cenBetween = function () {
     //recalculate for centrality
-    a = centrality.betweenness(g)
-    nodes.forEach(node => {
-        edgeSize = network.getConnectedEdges(node.id).length
-        if (edgeSize > 0) {
-            nodes.update({ id: node.id, boolAns: a[node.label] })
-        } else {
-            nodes.remove(node.id)
+
+    g.clear()
+
+    completeEdges.forEach(edge => {
+        if (edge.actual) {
+            g.addLink(edge.from, edge.to)
         }
-        // network.clustering.updateClusteredNode(node.id, {size: edgeSize * edgeSize * 10000})
+    })
+
+    a = centrality.betweenness(g)
+
+    nodes.forEach(node => {
+        if (a[node.id] != undefined) {
+            nodes.update({ id: node.id, value: a[node.id] })
+        } else {
+            nodes.update({ id: node.id, value: 0 })
+        }
     });
 }
 
-//group 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
+module.exports.cenDegree = function () {
+    //recalculate for centrality
+
+    g.clear()
+
+    completeEdges.forEach(edge => {
+        if (edge.actual) {
+            g.addLink(edge.from, edge.to)
+        }
+    })
+
+    a = centrality.degree(g)
+
+    nodes.forEach(node => {
+        if (a[node.id] != undefined) {
+            nodes.update({ id: node.id, value: a[node.id] })
+        } else {
+            nodes.update({ id: node.id, value: 0 })
+        }
+    });
+}
+
+module.exports.cenCloseness = function () {
+    //recalculate for centrality
+
+    g.clear()
+
+    completeEdges.forEach(edge => {
+        if (edge.actual) {
+            g.addLink(edge.from, edge.to)
+        }
+    })
+
+    a = centrality.closeness(g)
+
+    nodes.forEach(node => {
+        console.log(a[node.id])
+        if (a[node.id] != undefined) {
+            nodes.update({ id: node.id, value: a[node.id] })
+        } else {
+            nodes.update({ id: node.id, value: 0 })
+        }
+    });
+}
+
+module.exports.cenEccentricity = function () {
+    //recalculate for centrality
+
+    g.clear()
+
+    completeEdges.forEach(edge => {
+        if (edge.actual) {
+            g.addLink(edge.from, edge.to)
+        }
+    })
+
+    a = centrality.eccentricity(g)
+
+    nodes.forEach(node => {
+        console.log(a[node.id])
+        if (a[node.id] != undefined) {
+            nodes.update({ id: node.id, value: a[node.id] })
+        } else {
+            nodes.update({ id: node.id, value: 0 })
+        }
+    });
+}
+
+module.exports.recalculateGraph = function () {
+    completeEdges.clear()
+    let counter = 0
+    for (let i = 0; i < nodes.length; i++) {
+        for (let j = 0; j < nodes.length; j++) {
+            if (i !== j) {
+                counter++
+                var cluster = nodes.get(i)
+                var clusterOther = nodes.get(j)
+
+                if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
+                    continue
+                }
+
+                let real
+
+                switch (cluster.cluster) {
+                    case 4:
+                        if (clusterOther.cluster === 4) {
+                            // if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
+                            //     g.addLink(cluster.label, clusterOther.label)
+                            // }
+                        } else if (clusterOther.cluster === 3) {
+                            real = false
+                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
+                            real = false
+                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        }
+                        break
+                    case 3:
+                        if (clusterOther.cluster === 4) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 3) {
+                            // if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            //     g.addLink(cluster.label, clusterOther.label)
+                            // }
+                        } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
+                            real = false
+                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        }
+                        break
+                    case 1:
+                        if (clusterOther.cluster === 4) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 3) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 2) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        }
+                        break
+                    case 2:
+                        if (clusterOther.cluster === 4) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 3) {
+                            real = false
+                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 1) {
+                            real = false
+                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        } else if (clusterOther.cluster === 2) {
+                            real = false
+                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
+                                real = true
+                            }
+                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                        }
+                        break
+                    default:
+                }
+            }
+        }
+    }
+}
+
+//cluster 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
 module.exports.visjs = function (jsonObject) {
     jsonObject = JSON.parse(jsonObject)
 
@@ -1115,157 +1427,21 @@ module.exports.visjs = function (jsonObject) {
     for (let i = 0; i < jsonObject.length; i++) {
         var obj = jsonObject[i];
 
-        if(obj.cluster == null){
+        if (obj.cluster == null) {
             continue;
         }
 
         var answer = obj.answers[0].booleanAnswer
-        if(obj.cluster.negative){
+        if (obj.cluster.negative) {
             answer = !answer
         }
 
-        nodes.add({ id: i, name: obj.name, label: obj.label, group: dict[obj.cluster.name], boolAns: answer,value: 3 })
-
+        nodes.add({ id: i, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
     }
 
-    counter = 0
+    this.recalculateGraph()
 
-    for (let i = 0; i < nodes.length; i++) {
-        for (let j = 0; j < nodes.length; j++) {
-            if (i != j) {
-                counter++
-                var cluster = nodes.get(i)
-                var clusterOther = nodes.get(j)
 
-                if (cluster == null || clusterOther == null || cluster.group == null || clusterOther.group == null) {
-                    continue;
-                }
-                switch (cluster.group) {
-                    case 4:
-                        if (clusterOther.group == 4) {
-                            // if (cluster.boolAns == false && clusterOther.boolAns == true) {
-                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                            //     g.addLink(cluster.label, clusterOther.label)
-                            // }
-                        }else if (clusterOther.group == 3) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                        }else if (clusterOther.group == 2 || clusterOther.group == 1) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                        }
-                        break;
-                    case 3:
-                        if (clusterOther.group == 4) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 3) {
-                            // if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                            //     g.addLink(cluster.label, clusterOther.label)
-                            // }
-                        }else if (clusterOther.group == 2 || clusterOther.group == 1) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }
-                        break;
-                    case 1:
-                        if (clusterOther.group == 4) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 3) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 2) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }
-                        break;
-                    case 2:
-                        if (clusterOther.group == 4) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 3) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 1) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }else if (clusterOther.group == 2) {
-                            var real = false
-                            if (cluster.boolAns == true && clusterOther.boolAns == false) {
-                                edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                g.addLink(cluster.label, clusterOther.label)
-                                real = true
-                            }
-                            completeEdges.add({ id: counter,actual: real, from: i, to: j, arrows: 'to', color: { color: 'red' } })
-
-                        }
-                        break;
-                    default:
-
-                }
-            }
-        }
-    }
     console.log(edges.length)
     this.showGraph()
 }
