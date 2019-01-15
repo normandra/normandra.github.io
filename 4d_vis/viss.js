@@ -174,6 +174,14 @@ module.exports.showGraph = function () {
                 }
             }
 
+            completeEdges.forEach(edge => {
+                if (!edge.actual) {
+                    completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
+                } else {
+                    completeEdges.update([{ id: edge.id, color: { color: "red" } }])
+                }
+            })
+
         })
     });
 }
