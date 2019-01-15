@@ -1,5 +1,6 @@
 var centrality = require('ngraph.centrality');
 var g = require('ngraph.graph')();
+var createThree = require('ngraph.three');
 
 //generate nodes
 var nodes = new vis.DataSet()
@@ -18,6 +19,26 @@ var dict = {
     "funktion-negativ": 7,
     "nutzungszweck-negativ": 8,
 }
+
+function getNumber(string, defaultValue) {
+    var number = parseFloat(string);
+    return (typeof number === 'number') && !isNaN(number) ? number : (defaultValue || 10);
+}
+
+module.exports.threed = function () {
+
+    g.clear()
+    completeEdges.forEach(edge => {
+        if (edge.actual) {
+            g.addLink(edge.from, edge.to)
+        }
+    })
+  
+
+    var graphics = createThree(g, {interactive: true});
+    graphics.run(); // begin animation loop:
+    graphics.camera.position.z = getNumber(3, 400);
+  };
 
 module.exports.showGraph = function () {
     var container = document.getElementById('mynetwork');
@@ -63,6 +84,7 @@ module.exports.showGraph = function () {
             newAns = !node.boolAns
             nodes.update({ id: node.id, boolAns: newAns })
 
+            aTest = []
 
             completeEdges.clear()
             let counter = 0
@@ -91,13 +113,13 @@ module.exports.showGraph = function () {
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
                                 break
                             case 3:
@@ -106,7 +128,7 @@ module.exports.showGraph = function () {
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
                                     // if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                     //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
@@ -117,7 +139,7 @@ module.exports.showGraph = function () {
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
                                 break
                             case 1:
@@ -126,19 +148,19 @@ module.exports.showGraph = function () {
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
                                 break
                             case 2:
@@ -147,25 +169,25 @@ module.exports.showGraph = function () {
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 1) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
                                     }
-                                    completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
                                 break
                             default:
@@ -174,13 +196,19 @@ module.exports.showGraph = function () {
                 }
             }
 
+            completeEdges.add(aTest)
+
+            var aTest =[]
+
             completeEdges.forEach(edge => {
                 if (!edge.actual) {
-                    completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
+                    aTest.push({ id: edge.id, color: { color: "#ccc" } })
                 } else {
-                    completeEdges.update([{ id: edge.id, color: { color: "red" } }])
+                    aTest.push({ id: edge.id, color: { color: "red" }, value: 15 })
                 }
             })
+        
+            completeEdges.update(aTest)
 
         })
     });
@@ -199,15 +227,32 @@ module.exports.showComplete = function () {
 
 }
 
-module.exports.showConflicts = function () {
+module.exports.showConflictsSlow = function () {
     // create a network
+    // var aTest =[]
+
     completeEdges.forEach(edge => {
         if (!edge.actual) {
             completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
         } else {
-            completeEdges.update([{ id: edge.id, color: { color: "red" } }])
+            completeEdges.update([{ id: edge.id, color: { color: "red" }, value: 15 }])
         }
     })
+}
+
+module.exports.showConflictsFast = function () {
+    // create a network
+    var aTest =[]
+
+    completeEdges.forEach(edge => {
+        if (!edge.actual) {
+            aTest.push({ id: edge.id, color: { color: "#ccc" } })
+        } else {
+            aTest.push({ id: edge.id, color: { color: "red" }, value: 15 })
+        }
+    })
+
+    completeEdges.update(aTest)
 
 }
 
@@ -302,6 +347,8 @@ module.exports.cenEccentricity = function () {
 }
 
 module.exports.recalculateGraph = function () {
+
+    let aTest = []
     completeEdges.clear()
     let counter = 0
     for (let i = 0; i < nodes.length; i++) {
@@ -329,13 +376,13 @@ module.exports.recalculateGraph = function () {
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
                         break
                     case 3:
@@ -344,7 +391,7 @@ module.exports.recalculateGraph = function () {
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
                             // if (cluster.boolAns === true && clusterOther.boolAns === false) {
                             //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
@@ -355,7 +402,7 @@ module.exports.recalculateGraph = function () {
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
                         break
                     case 1:
@@ -364,19 +411,19 @@ module.exports.recalculateGraph = function () {
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
                         break
                     case 2:
@@ -385,25 +432,25 @@ module.exports.recalculateGraph = function () {
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 1) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
                             }
-                            completeEdges.add({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
                         break
                     default:
@@ -411,6 +458,9 @@ module.exports.recalculateGraph = function () {
             }
         }
     }
+
+    completeEdges.add(aTest)
+
 }
 
 //cluster 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
