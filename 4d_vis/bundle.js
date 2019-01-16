@@ -41780,6 +41780,29 @@ module.exports.showConflictsFast = function () {
 
 }
 
+module.exports.cenBetweenOverall = function () {
+    g.clear()
+
+    completeEdges.forEach(edge => {
+        g.addLink(edge.from, edge.to)
+        
+    })
+
+    a = centrality.betweenness(g)
+
+    var aTest = []
+    nodes.forEach(node => {
+        if (a[node.id] != undefined) {
+            aTest.push({ id: node.id, value: a[node.id] })
+        } else {
+            aTest.push({ id: node.id, value: 0 })
+        }
+    });
+
+    nodes.update(aTest)
+
+}
+
 module.exports.cenBetween = function () {
     //recalculate for centrality
 
