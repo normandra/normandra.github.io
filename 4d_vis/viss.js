@@ -1,6 +1,7 @@
 var centrality = require('ngraph.centrality');
 var g = require('ngraph.graph')();
-var createThree = require('ngraph.three');
+
+var renderGraph = require('ngraph.pixel');
 
 //generate nodes
 var nodes = new vis.DataSet()
@@ -26,18 +27,39 @@ function getNumber(string, defaultValue) {
 }
 
 module.exports.threed = function () {
+    conf = []
 
     g.clear()
     completeEdges.forEach(edge => {
         if (edge.actual) {
+            conf.push(g.addLink(edge.from, edge.to))
+        }else{
             g.addLink(edge.from, edge.to)
         }
     })
   
 
-    var graphics = createThree(g, {interactive: true});
-    graphics.run(); // begin animation loop:
-    graphics.camera.position.z = getNumber(3, 400);
+    var renderer = renderGraph(g, {
+        physics: {
+          springLength : 200,
+          springCoeff : 0.0002,
+          gravity: -1.2,
+          theta : 0.8,
+          dragCoeff : 0.04,
+          iterations: 5
+        }
+      });
+
+    renderer.on('nodehover', function(node) {
+        console.log('Hover node ' + JSON.stringify(node));
+    });
+
+    conf.forEach(link => {
+        var linkUI = renderer.getLink(link.id)
+        linkUI.fromColor = 0xFF0000; // update link head color
+        linkUI.toColor = 0xFF0000; // update link tail color
+    })
+    
   };
 
 module.exports.showGraph = function () {
@@ -269,13 +291,15 @@ module.exports.cenBetween = function () {
 
     a = centrality.betweenness(g)
 
+    var aTest = []
     nodes.forEach(node => {
         if (a[node.id] != undefined) {
-            nodes.update({ id: node.id, value: a[node.id] })
+            aTest.push({ id: node.id, value: a[node.id] })
         } else {
-            nodes.update({ id: node.id, value: 0 })
+            aTest.push({ id: node.id, value: 0 })
         }
     });
+    nodes.update(aTest)
 }
 
 module.exports.cenDegree = function () {
@@ -291,13 +315,15 @@ module.exports.cenDegree = function () {
 
     a = centrality.degree(g)
 
+    var aTest = []
     nodes.forEach(node => {
         if (a[node.id] != undefined) {
-            nodes.update({ id: node.id, value: a[node.id] })
+            aTest.push({ id: node.id, value: a[node.id] })
         } else {
-            nodes.update({ id: node.id, value: 0 })
+            aTest.push({ id: node.id, value: 0 })
         }
     });
+    nodes.update(aTest)
 }
 
 module.exports.cenCloseness = function () {
@@ -313,14 +339,15 @@ module.exports.cenCloseness = function () {
 
     a = centrality.closeness(g)
 
+    var aTest = []
     nodes.forEach(node => {
-        console.log(a[node.id])
         if (a[node.id] != undefined) {
-            nodes.update({ id: node.id, value: a[node.id] })
+            aTest.push({ id: node.id, value: a[node.id] })
         } else {
-            nodes.update({ id: node.id, value: 0 })
+            aTest.push({ id: node.id, value: 0 })
         }
     });
+    nodes.update(aTest)
 }
 
 module.exports.cenEccentricity = function () {
@@ -336,14 +363,15 @@ module.exports.cenEccentricity = function () {
 
     a = centrality.eccentricity(g)
 
+    var aTest = []
     nodes.forEach(node => {
-        console.log(a[node.id])
         if (a[node.id] != undefined) {
-            nodes.update({ id: node.id, value: a[node.id] })
+            aTest.push({ id: node.id, value: a[node.id] })
         } else {
-            nodes.update({ id: node.id, value: 0 })
+            aTest.push({ id: node.id, value: 0 })
         }
     });
+    nodes.update(aTest)
 }
 
 module.exports.recalculateGraph = function () {
