@@ -41927,6 +41927,7 @@ module.exports.recalculateGraph = function () {
     let nodeChanges = []
     completeEdges.clear()
     let counter = 0
+    console.log(nodes)
     for (let i = 0; i < nodes.length; i++) {
         var cluster = nodes.get(i)
         let wouldBeConflicts = 0
@@ -42070,6 +42071,8 @@ module.exports.recalculateGraph = function () {
 module.exports.visjs = function (jsonObject) {
     jsonObject = JSON.parse(jsonObject)
 
+    let a = 0
+
     // convert to ngraph notation
     for (let i = 0; i < jsonObject.length; i++) {
         var obj = jsonObject[i];
@@ -42083,7 +42086,8 @@ module.exports.visjs = function (jsonObject) {
             answer = !answer
         }
 
-        nodes.add({ id: i, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
+        nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
+        a++
     }
 
     this.recalculateGraph()
