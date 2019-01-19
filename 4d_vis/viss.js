@@ -97,6 +97,14 @@ module.exports.showGraph = function () {
         network.setOptions({ physics: false });
     });
 
+    network.on("afterDrawing", function (ctx) {
+        ctx.font = "30px Arial";
+        nodes.forEach(node => {
+            var nodePosition = network.getPositions([node.id]);
+            ctx.fillText(node.inverse, nodePosition[node.id].x - 15, nodePosition[node.id].y - 30); 
+        })
+      });
+
 
     network.on('click', function (properties) {
         var ids = properties.nodes;
@@ -106,23 +114,24 @@ module.exports.showGraph = function () {
             newAns = !node.boolAns
             nodes.update({ id: node.id, boolAns: newAns })
 
-            aTest = []
-
+            var aTest = []
+            let nodeChanges = []
             completeEdges.clear()
             let counter = 0
             for (let i = 0; i < nodes.length; i++) {
+                var cluster = nodes.get(i)
+                let wouldBeConflicts = 0
                 for (let j = 0; j < nodes.length; j++) {
                     if (i !== j) {
                         counter++
-                        var cluster = nodes.get(i)
                         var clusterOther = nodes.get(j)
-
+        
                         if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
                             continue
                         }
-
+        
                         let real
-
+        
                         switch (cluster.cluster) {
                             case 4:
                                 if (clusterOther.cluster === 4) {
@@ -134,12 +143,16 @@ module.exports.showGraph = function () {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
+                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
+                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
@@ -149,6 +162,8 @@ module.exports.showGraph = function () {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    } else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
@@ -160,6 +175,8 @@ module.exports.showGraph = function () {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
+                                    }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
@@ -169,18 +186,24 @@ module.exports.showGraph = function () {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
@@ -190,24 +213,32 @@ module.exports.showGraph = function () {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 3) {
                                     real = false
                                     if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                         real = true
+                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 1) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
+                                    }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 } else if (clusterOther.cluster === 2) {
                                     real = false
                                     if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                         real = true
+                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                        wouldBeConflicts++
                                     }
                                     aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                                 }
@@ -216,8 +247,12 @@ module.exports.showGraph = function () {
                         }
                     }
                 }
+                if(cluster != null){
+                    nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts})
+                }
             }
-
+        
+            nodes.update(nodeChanges)
             completeEdges.add(aTest)
 
             var aTest =[]
@@ -247,19 +282,6 @@ module.exports.showComplete = function () {
 
     });
 
-}
-
-module.exports.showConflictsSlow = function () {
-    // create a network
-    // var aTest =[]
-
-    completeEdges.forEach(edge => {
-        if (!edge.actual) {
-            completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
-        } else {
-            completeEdges.update([{ id: edge.id, color: { color: "red" }, value: 15 }])
-        }
-    })
 }
 
 module.exports.showConflictsFast = function () {
@@ -400,13 +422,15 @@ module.exports.cenEccentricity = function () {
 module.exports.recalculateGraph = function () {
 
     let aTest = []
+    let nodeChanges = []
     completeEdges.clear()
     let counter = 0
     for (let i = 0; i < nodes.length; i++) {
+        var cluster = nodes.get(i)
+        let wouldBeConflicts = 0
         for (let j = 0; j < nodes.length; j++) {
             if (i !== j) {
                 counter++
-                var cluster = nodes.get(i)
                 var clusterOther = nodes.get(j)
 
                 if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
@@ -426,12 +450,16 @@ module.exports.recalculateGraph = function () {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
+                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
+                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
@@ -441,6 +469,8 @@ module.exports.recalculateGraph = function () {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            } else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
@@ -452,6 +482,8 @@ module.exports.recalculateGraph = function () {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
+                            }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
@@ -461,18 +493,24 @@ module.exports.recalculateGraph = function () {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
@@ -482,24 +520,32 @@ module.exports.recalculateGraph = function () {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 3) {
                             real = false
                             if (cluster.boolAns === false && clusterOther.boolAns === true) {
                                 real = true
+                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 1) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
+                            }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         } else if (clusterOther.cluster === 2) {
                             real = false
                             if (cluster.boolAns === true && clusterOther.boolAns === false) {
                                 real = true
+                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
+                                wouldBeConflicts++
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
@@ -508,8 +554,12 @@ module.exports.recalculateGraph = function () {
                 }
             }
         }
+        if(cluster != null){
+            nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts})
+        }
     }
 
+    nodes.update(nodeChanges)
     completeEdges.add(aTest)
 
 }
