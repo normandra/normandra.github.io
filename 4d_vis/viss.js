@@ -54,24 +54,24 @@ module.exports.threed = function () {
     completeEdges.forEach(edge => {
         if (edge.actual) {
             conf.push(g.addLink(edge.from, edge.to))
-        }else{
+        } else {
             g.addLink(edge.from, edge.to)
         }
     })
-  
+
 
     var renderer = renderGraph(g, {
         physics: {
-          springLength : 200,
-          springCoeff : 0.0002,
-          gravity: -1.2,
-          theta : 0.8,
-          dragCoeff : 0.04,
-          iterations: 5
+            springLength: 200,
+            springCoeff: 0.0002,
+            gravity: -1.2,
+            theta: 0.8,
+            dragCoeff: 0.04,
+            iterations: 5
         }
-      });
+    });
 
-    renderer.on('nodehover', function(node) {
+    renderer.on('nodehover', function (node) {
         console.log('Hover node ' + JSON.stringify(node));
     });
 
@@ -80,8 +80,8 @@ module.exports.threed = function () {
         linkUI.fromColor = 0xFF0000; // update link head color
         linkUI.toColor = 0xFF0000; // update link tail color
     })
-    
-  };
+
+};
 
 module.exports.showGraph = function () {
     var container = document.getElementById('mynetwork');
@@ -122,9 +122,9 @@ module.exports.showGraph = function () {
         ctx.font = "30px Arial";
         nodes.forEach(node => {
             var nodePosition = network.getPositions([node.id]);
-            ctx.fillText(node.inverse, nodePosition[node.id].x - 15, nodePosition[node.id].y - 30); 
+            ctx.fillText(node.inverse, nodePosition[node.id].x - 15, nodePosition[node.id].y - 30);
         })
-      });
+    });
 
 
     network.on('click', function (properties) {
@@ -135,10 +135,11 @@ module.exports.showGraph = function () {
             newAns = !node.boolAns
             nodes.update({ id: node.id, boolAns: newAns })
 
-            var aTest = []
+            let aTest = []
             let nodeChanges = []
             completeEdges.clear()
             let counter = 0
+            console.log(nodes)
             for (let i = 0; i < nodes.length; i++) {
                 var cluster = nodes.get(i)
                 let wouldBeConflicts = 0
@@ -146,147 +147,50 @@ module.exports.showGraph = function () {
                     if (i !== j) {
                         counter++
                         var clusterOther = nodes.get(j)
-        
+
                         if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
                             continue
                         }
-        
+
                         let real
-        
-                        switch (cluster.cluster) {
-                            case 4:
-                                if (clusterOther.cluster === 4) {
-                                    // if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                    //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                                    //     g.addLink(cluster.label, clusterOther.label)
-                                    // }
-                                } else if (clusterOther.cluster === 3) {
-                                    real = false
-                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                        real = true
-                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
-                                    real = false
-                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                        real = true
-                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                }
-                                break
-                            case 3:
-                                if (clusterOther.cluster === 4) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    } else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 3) {
-                                    // if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                    //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                    //     g.addLink(cluster.label, clusterOther.label)
-                                    // }
-                                } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
-                                    real = false
-                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                        real = true
-                                    }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                }
-                                break
-                            case 1:
-                                if (clusterOther.cluster === 4) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 3) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 2) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                }
-                                break
-                            case 2:
-                                if (clusterOther.cluster === 4) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 3) {
-                                    real = false
-                                    if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                        real = true
-                                    }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 1) {
-                                    real = false
-                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                        real = true
-                                    }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                } else if (clusterOther.cluster === 2) {
-                                    real = false
-                                    if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                        real = true
-                                    } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                        wouldBeConflicts++
-                                    }
-                                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                                }
-                                break
-                            default:
+
+                        nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
+                        nodeRule = ruleList[nodeRule]
+
+                        if (nodeRule != null) {
+                            real = false
+                            result = nodeRule(cluster.boolAns, clusterOther.boolAns)
+                            if (result == 1) {
+                                // conflict
+                                real = true
+                            } else if (result == 2) {
+                                //would be conflict
+                                wouldBeConflicts++
+                            }
+                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                         }
+
                     }
                 }
-                if(cluster != null){
-                    nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts})
+                if (cluster != null) {
+                    nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts })
                 }
             }
-        
+
             nodes.update(nodeChanges)
             completeEdges.add(aTest)
 
-            var aTest =[]
+            var conf = []
 
             completeEdges.forEach(edge => {
                 if (!edge.actual) {
-                    aTest.push({ id: edge.id, color: { color: "#ccc" } })
+                    conf.push({ id: edge.id, color: { color: "#ccc" } })
                 } else {
-                    aTest.push({ id: edge.id, color: { color: "red" }, value: 15 })
+                    conf.push({ id: edge.id, color: { color: "red" }, value: 15 })
                 }
             })
-        
-            completeEdges.update(aTest)
+
+            completeEdges.update(conf)
 
         })
     });
@@ -307,7 +211,7 @@ module.exports.showComplete = function () {
 
 module.exports.showConflictsFast = function () {
     // create a network
-    var aTest =[]
+    var aTest = []
 
     completeEdges.forEach(edge => {
         if (!edge.actual) {
@@ -326,7 +230,7 @@ module.exports.cenBetweenOverall = function () {
 
     completeEdges.forEach(edge => {
         g.addLink(edge.from, edge.to)
-        
+
     })
 
     a = centrality.betweenness(g)
@@ -461,123 +365,26 @@ module.exports.recalculateGraph = function () {
 
                 let real
 
-                switch (cluster.cluster) {
-                    case 4:
-                        if (clusterOther.cluster === 4) {
-                            // if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: 'red' } })
-                            //     g.addLink(cluster.label, clusterOther.label)
-                            // }
-                        } else if (clusterOther.cluster === 3) {
-                            real = false
-                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                real = true
-                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
-                            real = false
-                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                real = true
-                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        }
-                        break
-                    case 3:
-                        if (clusterOther.cluster === 4) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            } else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 3) {
-                            // if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                            //     edges.add({ from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                            //     g.addLink(cluster.label, clusterOther.label)
-                            // }
-                        } else if (clusterOther.cluster === 2 || clusterOther.cluster === 1) {
-                            real = false
-                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                real = true
-                            }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        }
-                        break
-                    case 1:
-                        if (clusterOther.cluster === 4) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 3) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 2) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        }
-                        break
-                    case 2:
-                        if (clusterOther.cluster === 4) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 3) {
-                            real = false
-                            if (cluster.boolAns === false && clusterOther.boolAns === true) {
-                                real = true
-                            }  else if (cluster.boolAns === true && clusterOther.boolAns === true){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 1) {
-                            real = false
-                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                real = true
-                            }  else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        } else if (clusterOther.cluster === 2) {
-                            real = false
-                            if (cluster.boolAns === true && clusterOther.boolAns === false) {
-                                real = true
-                            } else if (cluster.boolAns === false && clusterOther.boolAns === false){
-                                wouldBeConflicts++
-                            }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
-                        }
-                        break
-                    default:
+                nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
+                nodeRule = ruleList[nodeRule]
+
+                if (nodeRule != null) {
+                    real = false
+                    result = nodeRule(cluster.boolAns, clusterOther.boolAns)
+                    if (result == 1) {
+                        // conflict
+                        real = true
+                    } else if (result == 2) {
+                        //would be conflict
+                        wouldBeConflicts++
+                    }
+                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
                 }
+
             }
         }
-        if(cluster != null){
-            nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts})
+        if (cluster != null) {
+            nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts })
         }
     }
 
@@ -620,19 +427,19 @@ module.exports.parseRule = function (rule) {
     var test = rule.split("*");
     a = test.length - 1
 
-    for (i = 0; i < a ; i++){
+    for (i = 0; i < a; i++) {
         var rule = test[i].split(";")
-        ruleList[String([cleanDict[rule[0].trim()],cleanDict[rule[2].trim()]])] = readCase(rule[3])
+        ruleList[String([cleanDict[rule[0].trim()], cleanDict[rule[2].trim()]])] = readCase(rule[3])
     }
-    
+
     // b = readCase("Fall 3")
     // console.log(b(true,true))
     //krit 1 on [0] krit 2 on [2] case on [3]
-    
-    console.log(ruleList)
+
+    console.log(ruleList["1,2"])
 }
 
-function readCase(name){
+function readCase(name) {
     var rule = parseInt(name.split(" ")[1]);
     switch (rule) {
         case 1:
@@ -641,48 +448,65 @@ function readCase(name){
             return caseTwo
         case 3:
             return caseThree
-        case 4: 
+        case 4:
             return caseFour
         case 5:
             return caseFive
         default:
+            return false
     }
 }
 
-function caseOne(a,b){
-    if (a === true && b === true){
-        return true
-    }else{
-        return false
+//1 a conflict
+//2 would be conflict
+//3 nothing
+
+function caseOne(a, b) {
+    if (a === true && b === true) {
+        return 1
+    } else if (a === false && b === true) {
+        return 2
+    } else {
+        return 3
     }
 }
 
-function caseTwo(a,b){
-    if (a === true && b === false){
-        return true
-    }else{
-        return false
+function caseTwo(a, b) {
+    if (a === true && b === false) {
+        return 1
+    } else if (a === false && b === false) {
+        return 2
+    } else {
+        return 3
     }
 }
 
-function caseThree(a,b){
-    if (a == false && b === true){
-        return true
-    }else{
-        return false
+function caseThree(a, b) {
+    if (a == false && b === true) {
+        return 1
+    } else if (a === true && b === true) {
+        return 2
+    } else {
+        return 3
     }
 }
 
-function caseFour(a,b){
-    if (a === false && b === false){
-        return true
-    }else{
-        return false
+function caseFour(a, b) {
+    if (a === false && b === false) {
+        return 1
+    } else if (a === true && b === false) {
+        return 2
+    } else {
+        return 3
     }
 }
 
-function caseFive(a,b){
-    return false
+function caseFive(a, b) {
+    return 3
+}
+
+function hashKriteria(a, b) {
+    return a + "," + b
 }
 
 // console.log(network.getConnectedNodes(2).length)

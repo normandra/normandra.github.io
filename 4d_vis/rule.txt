@@ -1,0 +1,36 @@
+endogene Anforderung;vs.;endogene Anforderung;Fall 2*
+endogene Anforderung;vs.;exogene Anforderung;Fall 2*
+endogene Anforderung;vs.;Funktion;Fall 3*
+endogene Anforderung;vs.;Nutzungszweck;Fall 3*
+endogene Anforderung;vs.;Risiko;Fall 2*
+endogene Anforderung;vs.;Nebenfolge;Fall 3*
+exogene Anforderung;vs.;endogene Anforderung;Fall 3*
+exogene Anforderung;vs.;exogene Anforderung;Fall 2*
+exogene Anforderung;vs.;Funktion;Fall 3*
+exogene Anforderung;vs.;Nutzungszweck;Fall 3*
+exogene Anforderung;vs.;Risiko;Fall 4*
+exogene Anforderung;vs.;Nebenfolge;Fall 5*
+Funktion;vs.;endogene Anforderung;Fall 3*
+Funktion;vs.;exogene Anforderung;Fall 3*
+Funktion;vs.;Funktion;Fall 2*
+Funktion;vs.;Nutzungszweck;Fall 3*
+Funktion;vs.;Risiko;Fall 2*
+Funktion;vs.;Nebenfolge;Fall 1*
+Nutzungszweck;vs.;endogene Anforderung;Fall 2*
+Nutzungszweck;vs.;exogene Anforderung;Fall 2*
+Nutzungszweck;vs.;Funktion;Fall 2*
+Nutzungszweck;vs.;Nutzungszweck;Fall 1*
+Nutzungszweck;vs.;Risiko;Fall 1*
+Nutzungszweck;vs.;Nebenfolge;Fall 1*
+Risiko;vs.;endogene Anforderung;Fall 3*
+Risiko;vs.;exogene Anforderung;Fall 4*
+Risiko;vs.;Funktion;Fall 3*
+Risiko;vs.;Nutzungszweck;Fall 1*
+Risiko;vs.;Risiko;Fall 4*
+Risiko;vs.;Nebenfolge;Fall 2*
+Nebenfolge;vs.;endogene Anforderung;Fall 2*
+Nebenfolge;vs.;exogene Anforderung;Fall 5*
+Nebenfolge;vs.;Funktion;Fall 1*
+Nebenfolge;vs.;Nutzungszweck;Fall 1*
+Nebenfolge;vs.;Risiko;Fall 3*
+Nebenfolge;vs.;Nebenfolge;Fall 5*
