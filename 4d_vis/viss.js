@@ -9,16 +9,37 @@ var edges = new vis.DataSet()
 var completeEdges = new vis.DataSet()
 var network
 
+var ruleList = {}
+
+
+var cleanDict = {
+    "exogene Anforderung": 1,
+    "endogene Anforderung": 2,
+    "Funktion": 3,
+    "Nebenfolge": 4,
+    "Nutzungszweck": 5,
+    "Risiko": 6,
+    "exogene-anforderung-negativ": 7,
+    "endogene-anforderung-negativ": 8,
+    "funktion-negativ": 9,
+    "nebenfolge-negativ": 10,
+    "nutzungszweck-negativ": 11,
+    "risiko-negativ": 12,
+}
 
 var dict = {
     "exogene-anforderung": 1,
     "endogene-anforderung": 2,
     "funktion": 3,
-    "nutzungszweck": 4,
-    "exogene-anforderung-negativ": 5,
-    "endogene-anforderung-negativ": 6,
-    "funktion-negativ": 7,
-    "nutzungszweck-negativ": 8,
+    "nebenfolge": 4,
+    "nutzungszweck": 5,
+    "risiko": 6,
+    "exogene-anforderung-negativ": 7,
+    "endogene-anforderung-negativ": 8,
+    "funktion-negativ": 9,
+    "nebenfolge-negativ": 10,
+    "nutzungszweck-negativ": 11,
+    "risiko-negativ": 12,
 }
 
 function getNumber(string, defaultValue) {
@@ -595,6 +616,73 @@ module.exports.visjs = function (jsonObject) {
     this.showGraph()
 }
 
+module.exports.parseRule = function (rule) {
+    var test = rule.split("*");
+    a = test.length - 1
 
+    for (i = 0; i < a ; i++){
+        var rule = test[i].split(";")
+        ruleList[String([cleanDict[rule[0].trim()],cleanDict[rule[2].trim()]])] = readCase(rule[3])
+    }
+    
+    // b = readCase("Fall 3")
+    // console.log(b(true,true))
+    //krit 1 on [0] krit 2 on [2] case on [3]
+    
+    console.log(ruleList)
+}
+
+function readCase(name){
+    var rule = parseInt(name.split(" ")[1]);
+    switch (rule) {
+        case 1:
+            return caseOne
+        case 2:
+            return caseTwo
+        case 3:
+            return caseThree
+        case 4: 
+            return caseFour
+        case 5:
+            return caseFive
+        default:
+    }
+}
+
+function caseOne(a,b){
+    if (a === true && b === true){
+        return true
+    }else{
+        return false
+    }
+}
+
+function caseTwo(a,b){
+    if (a === true && b === false){
+        return true
+    }else{
+        return false
+    }
+}
+
+function caseThree(a,b){
+    if (a == false && b === true){
+        return true
+    }else{
+        return false
+    }
+}
+
+function caseFour(a,b){
+    if (a === false && b === false){
+        return true
+    }else{
+        return false
+    }
+}
+
+function caseFive(a,b){
+    return false
+}
 
 // console.log(network.getConnectedNodes(2).length)
