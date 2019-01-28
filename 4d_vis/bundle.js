@@ -41883,6 +41883,7 @@ module.exports.sortEdges = function () {
     return toSort
 }
 
+// node sort wrong
 module.exports.sortNodes = function () {
     this.cenBetween()
     let toSort = nodes.getIds()
