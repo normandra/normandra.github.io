@@ -167,7 +167,7 @@ module.exports.showGraph = function () {
                                 //would be conflict
                                 wouldBeConflicts++
                             }
-                            aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                            aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                         }
 
                     }
@@ -176,6 +176,8 @@ module.exports.showGraph = function () {
                     nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts })
                 }
             }
+
+            console.log("edges list to test")
 
             nodes.update(nodeChanges)
             completeEdges.add(aTest)
@@ -344,6 +346,22 @@ module.exports.cenEccentricity = function () {
     nodes.update(aTest)
 }
 
+module.exports.slimEdges = function () {
+    let seenNodes = []
+    let out = []
+
+    completeEdges.forEach(edge => {
+        if(edge.actual){
+            if(!seenNodes.includes(edge.to)){
+                seenNodes.push(edge.from)
+                out.push(edge)
+            }
+        }
+    });
+
+    return out
+}
+
 module.exports.recalculateGraph = function () {
 
     let aTest = []
@@ -378,7 +396,7 @@ module.exports.recalculateGraph = function () {
                         //would be conflict
                         wouldBeConflicts++
                     }
-                    aTest.push({ id: counter, actual: real, from: i, to: j, arrows: 'to', color: { color: '#cccccc' } })
+                    aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                 }
 
             }
