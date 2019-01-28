@@ -41701,15 +41701,22 @@ module.exports.showGraph = function () {
 }
 
 module.exports.showComplete = function () {
+    var atest = []
+    var btest = []
+
     // create a network
     completeEdges.forEach(edge => {
-        completeEdges.update([{ id: edge.id, color: { color: "#ccc" } }])
+        atest.push({ id: edge.id, color: { color: "#ccc" },value: undefined })
     })
 
     nodes.forEach(node => {
-        nodes.update({ id: node.id, hidden: false, value: 1 })
+        btest.push({ id: node.id, hidden: false, value: 1 })
 
     });
+
+    completeEdges.clear
+    completeEdges.update(atest)
+    nodes.update(btest)
 
 }
 
@@ -41862,6 +41869,45 @@ module.exports.slimEdges = function () {
     });
 
     return out
+}
+
+module.exports.sortEdges = function () {
+    this.cenBetween()
+    let toSort = this.slimEdges()
+    toSort.sort(function(a,b) {
+        return (nodes.get(b.from).value + nodes.get(b.to).value) - (nodes.get(a.from).value + nodes.get(a.to).value)
+    })
+
+    console.log(toSort)
+    console.log(nodes)
+    return toSort
+}
+
+module.exports.sortNodes = function () {
+    this.cenBetween()
+    let toSort = nodes.getIds()
+    let edgeList = this.sortEdges()
+    let sortedEdges = []
+    let finalEdges = []
+
+    toSort.sort(function(a,b) {
+        return  (nodes.get(b).value) -( nodes.get(a).value)
+    })
+
+    console.log("sorted nodes",toSort)
+
+    toSort.forEach(node => {
+        edgeList.forEach(edge => {
+            if((edge.from == node || edge.to == node) && !sortedEdges.includes(edge.id)) {
+                sortedEdges.push(edge.id)
+                finalEdges.push(edge)
+            }
+        });
+    });
+
+    console.log("sorted edges: ",finalEdges)
+
+    return finalEdges
 }
 
 module.exports.recalculateGraph = function () {
