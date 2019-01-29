@@ -41508,6 +41508,7 @@ var renderGraph = require('ngraph.pixel');
 //generate nodes
 var nodes = new vis.DataSet()
 var edges = new vis.DataSet()
+var simulatorEdges = new vis.DataSet()
 var completeEdges = new vis.DataSet()
 var network
 
@@ -41637,74 +41638,120 @@ module.exports.showGraph = function () {
             newAns = !node.boolAns
             nodes.update({ id: node.id, boolAns: newAns })
 
+
+
             let aTest = []
             let nodeChanges = []
             completeEdges.clear()
             let counter = 0
-        
+
+            let seenConflicts = []
             let wouldBeConflicts = {}
             let idlist = nodes.getIds()
-        
+
             idlist.forEach(id => {
                 wouldBeConflicts[id] = {
                     inverse: 0,
                 }
             });
-        
+
             for (let i = 0; i < nodes.length; i++) {
                 var cluster = nodes.get(i)
-        
                 for (let j = 0; j < nodes.length; j++) {
-                    if (i !== j && j > i) {
+                    var clusterOther = nodes.get(j)
+                    if (i !== j && !seenConflicts.includes(hashKriteria(clusterOther.id, cluster.id))) {
                         counter++
-                        var clusterOther = nodes.get(j)
-        
+
                         if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
                             continue
                         }
-        
+
                         let real
-        
+
                         nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
                         nodeRule = ruleList[nodeRule]
-        
+
                         if (nodeRule != null) {
                             real = false
                             result = nodeRule(cluster.boolAns, clusterOther.boolAns)
                             if (result == 1) {
                                 // conflict
                                 real = true
-                            } else if (result == 2) {
-                                //would be conflict
-                                console.log(wouldBeConflicts[cluster.id][clusterOther.id])
-                                    wouldBeConflicts[cluster.id] = {
-                                        inverse: wouldBeConflicts[cluster.id].inverse + 1
-                                    }
-        
-        
-                            } else if (result == 3) {
-                                //opposite would be conflict
-                                    wouldBeConflicts[clusterOther.id] = { 
-                                        inverse: wouldBeConflicts[clusterOther.id].inverse + 1 
-                                    }
-                                
-        
+                                seenConflicts.push(hashKriteria(cluster.id, clusterOther.id))
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                         }
-        
                     }
                 }
             }
-        
-        
+
+
             idlist.forEach(idd => {
                 nodeChanges.push({ id: idd, inverse: wouldBeConflicts[idd].inverse })
             });
-        
-        
+
+
             nodes.update(nodeChanges)
             completeEdges.add(aTest)
+
+            let updateInverse = []
+
+            for (let k = 0; k < nodes.length; k++) {
+                var fakeCounter = 0
+                seenConflicts = []
+                aTest = []
+                var changedCluster = nodes.get(k)
+                var simAns = !changedCluster.boolAns
+                for (let i = 0; i < nodes.length; i++) {
+                    var cluster = nodes.get(i)
+                    if (cluster.id == changedCluster.id) {
+                        cluster.boolAns = simAns
+                    }
+                    // cluster.boolAns = !cluster.boolAns
+                    for (let j = 0; j < nodes.length; j++) {
+                        var clusterOther = nodes.get(j)
+                        if (clusterOther.id == changedCluster.id) {
+                            clusterOther.boolAns = simAns
+                        }
+                        if (i !== j && !seenConflicts.includes(hashKriteria(clusterOther.id, cluster.id))) {
+                            fakeCounter++
+        
+                            if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
+                                continue
+                            }
+        
+                            let real
+        
+                            nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
+                            nodeRule = ruleList[nodeRule]
+        
+                            if (nodeRule != null) {
+                                real = false
+                                result = nodeRule(cluster.boolAns, clusterOther.boolAns)
+                                if (result == 1) {
+                                    // conflict
+                                    real = true
+                                    seenConflicts.push(hashKriteria(cluster.id, clusterOther.id))
+                                }
+                                aTest.push({ id: fakeCounter, actual: real, from: i, to: j })
+                            }
+                        }
+                    }
+                }
+                console.log(aTest)
+                console.log(seenConflicts)
+                let counter = 0
+                aTest.forEach(edge => {
+                    if ((edge.to == changedCluster.id || edge.from == changedCluster.id) && edge.actual) {
+                        counter++
+                    }
+                });
+                updateInverse.push({ id: changedCluster.id, inverse: counter })
+        
+            }
+            nodes.update(updateInverse)
+
+
 
             var conf = []
 
@@ -41955,6 +42002,7 @@ module.exports.recalculateGraph = function () {
     completeEdges.clear()
     let counter = 0
 
+    let seenConflicts = []
     let wouldBeConflicts = {}
     let idlist = nodes.getIds()
 
@@ -41966,11 +42014,10 @@ module.exports.recalculateGraph = function () {
 
     for (let i = 0; i < nodes.length; i++) {
         var cluster = nodes.get(i)
-
         for (let j = 0; j < nodes.length; j++) {
-            if (i !== j && j > i) {
+            var clusterOther = nodes.get(j)
+            if (i !== j && !seenConflicts.includes(hashKriteria(clusterOther.id, cluster.id))) {
                 counter++
-                var clusterOther = nodes.get(j)
 
                 if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
                     continue
@@ -41987,25 +42034,10 @@ module.exports.recalculateGraph = function () {
                     if (result == 1) {
                         // conflict
                         real = true
-                    } else if (result == 2) {
-                        //would be conflict
-                        console.log(wouldBeConflicts[cluster.id][clusterOther.id])
-                            wouldBeConflicts[cluster.id] = {
-                                inverse: wouldBeConflicts[cluster.id].inverse + 1
-                            }
-
-
-                    } else if (result == 3) {
-                        //opposite would be conflict
-                            wouldBeConflicts[clusterOther.id] = { 
-                                inverse: wouldBeConflicts[clusterOther.id].inverse + 1 
-                            }
-                        
-
+                        seenConflicts.push(hashKriteria(cluster.id, clusterOther.id))
                     }
                     aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                 }
-
             }
         }
     }
@@ -42019,6 +42051,65 @@ module.exports.recalculateGraph = function () {
     nodes.update(nodeChanges)
     completeEdges.add(aTest)
 
+    let updateInverse = []
+
+    for (let k = 0; k < nodes.length; k++) {
+        var fakeCounter = 0
+        seenConflicts = []
+        aTest = []
+        var changedCluster = nodes.get(k)
+        var simAns = !changedCluster.boolAns
+        for (let i = 0; i < nodes.length; i++) {
+            var cluster = nodes.get(i)
+            if (cluster.id == changedCluster.id) {
+                cluster.boolAns = simAns
+            }
+            // cluster.boolAns = !cluster.boolAns
+            for (let j = 0; j < nodes.length; j++) {
+                var clusterOther = nodes.get(j)
+                if (clusterOther.id == changedCluster.id) {
+                    clusterOther.boolAns = simAns
+                }
+                if (i !== j && !seenConflicts.includes(hashKriteria(clusterOther.id, cluster.id))) {
+                    fakeCounter++
+
+                    if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
+                        continue
+                    }
+
+                    let real
+
+                    nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
+                    nodeRule = ruleList[nodeRule]
+
+                    if (nodeRule != null) {
+                        real = false
+                        result = nodeRule(cluster.boolAns, clusterOther.boolAns)
+                        if (result == 1) {
+                            // conflict
+                            real = true
+                            seenConflicts.push(hashKriteria(cluster.id, clusterOther.id))
+                        }
+                        aTest.push({ id: fakeCounter, actual: real, from: i, to: j })
+                    }
+                }
+            }
+        }
+        console.log(aTest)
+        console.log(seenConflicts)
+        let counter = 0
+        aTest.forEach(edge => {
+            if ((edge.to == changedCluster.id || edge.from == changedCluster.id) && edge.actual) {
+                counter++
+            }
+        });
+        updateInverse.push({ id: changedCluster.id, inverse: counter })
+
+    }
+    nodes.update(updateInverse)
+
+
+
 }
 
 //cluster 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
@@ -42031,16 +42122,20 @@ module.exports.visjs = function (jsonObject) {
     for (let i = 0; i < jsonObject.length; i++) {
         var obj = jsonObject[i];
 
-        if (obj.cluster == null) {
+        if (obj.subcriterion.cluster.id == null) {
             continue;
         }
 
-        var answer = obj.answers[0].booleanAnswer
+        /* var answer = obj.answers[0].booleanAnswer
         if (obj.cluster.negative) {
             answer = !answer
-        }
+        } */
+        var answer = obj.booleanAnswer
 
-        nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
+        console.log(obj)
+
+        // michael nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
+        nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 3 })
         a++
     }
 
@@ -42144,6 +42239,10 @@ function caseFive(a, b) {
 
 function hashKriteria(a, b) {
     return a + "," + b
+}
+
+var naiveReverse = function (string) {
+    return string.split('').reverse().join('');
 }
 
 // console.log(network.getConnectedNodes(2).length)
