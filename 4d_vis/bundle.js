@@ -41641,24 +41641,33 @@ module.exports.showGraph = function () {
             let nodeChanges = []
             completeEdges.clear()
             let counter = 0
-            console.log(nodes)
+        
+            let wouldBeConflicts = {}
+            let idlist = nodes.getIds()
+        
+            idlist.forEach(id => {
+                wouldBeConflicts[id] = {
+                    inverse: 0,
+                }
+            });
+        
             for (let i = 0; i < nodes.length; i++) {
                 var cluster = nodes.get(i)
-                let wouldBeConflicts = 0
+        
                 for (let j = 0; j < nodes.length; j++) {
-                    if (i !== j) {
+                    if (i !== j && j > i) {
                         counter++
                         var clusterOther = nodes.get(j)
-
+        
                         if (cluster === null || clusterOther === null || cluster.cluster === null || clusterOther.cluster === null) {
                             continue
                         }
-
+        
                         let real
-
+        
                         nodeRule = hashKriteria(cluster.cluster, clusterOther.cluster)
                         nodeRule = ruleList[nodeRule]
-
+        
                         if (nodeRule != null) {
                             real = false
                             result = nodeRule(cluster.boolAns, clusterOther.boolAns)
@@ -41667,20 +41676,33 @@ module.exports.showGraph = function () {
                                 real = true
                             } else if (result == 2) {
                                 //would be conflict
-                                wouldBeConflicts++
+                                console.log(wouldBeConflicts[cluster.id][clusterOther.id])
+                                    wouldBeConflicts[cluster.id] = {
+                                        inverse: wouldBeConflicts[cluster.id].inverse + 1
+                                    }
+        
+        
+                            } else if (result == 3) {
+                                //opposite would be conflict
+                                    wouldBeConflicts[clusterOther.id] = { 
+                                        inverse: wouldBeConflicts[clusterOther.id].inverse + 1 
+                                    }
+                                
+        
                             }
                             aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                         }
-
+        
                     }
                 }
-                if (cluster != null) {
-                    nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts })
-                }
             }
-
-            console.log("edges list to test")
-
+        
+        
+            idlist.forEach(idd => {
+                nodeChanges.push({ id: idd, inverse: wouldBeConflicts[idd].inverse })
+            });
+        
+        
             nodes.update(nodeChanges)
             completeEdges.add(aTest)
 
@@ -41706,7 +41728,7 @@ module.exports.showComplete = function () {
 
     // create a network
     completeEdges.forEach(edge => {
-        atest.push({ id: edge.id, color: { color: "#ccc" },value: undefined })
+        atest.push({ id: edge.id, color: { color: "#ccc" }, value: undefined })
     })
 
     nodes.forEach(node => {
@@ -41860,8 +41882,8 @@ module.exports.slimEdges = function () {
     let out = []
 
     completeEdges.forEach(edge => {
-        if(edge.actual){
-            if(!seenNodes.includes(edge.to)){
+        if (edge.actual) {
+            if (!seenNodes.includes(edge.to)) {
                 seenNodes.push(edge.from)
                 out.push(edge)
             }
@@ -41871,10 +41893,25 @@ module.exports.slimEdges = function () {
     return out
 }
 
+function trimEdges(edgeToTrim) {
+    let seenNodes = []
+    let out = []
+
+    edgeToTrim.forEach(edge => {
+        if (!seenNodes.includes(edge.to)) {
+            seenNodes.push(edge.from)
+            out.push(edge)
+        }
+
+    });
+
+    return out
+}
+
 module.exports.sortEdges = function () {
     this.cenBetween()
     let toSort = this.slimEdges()
-    toSort.sort(function(a,b) {
+    toSort.sort(function (a, b) {
         return (nodes.get(b.from).value + nodes.get(b.to).value) - (nodes.get(a.from).value + nodes.get(a.to).value)
     })
 
@@ -41891,22 +41928,22 @@ module.exports.sortNodes = function () {
     let sortedEdges = []
     let finalEdges = []
 
-    toSort.sort(function(a,b) {
-        return  (nodes.get(b).value) -( nodes.get(a).value)
+    toSort.sort(function (a, b) {
+        return (nodes.get(b).value) - (nodes.get(a).value)
     })
 
-    console.log("sorted nodes",toSort)
+    console.log("sorted nodes", toSort)
 
     toSort.forEach(node => {
         edgeList.forEach(edge => {
-            if((edge.from == node || edge.to == node) && !sortedEdges.includes(edge.id)) {
+            if ((edge.from == node || edge.to == node) && !sortedEdges.includes(edge.id)) {
                 sortedEdges.push(edge.id)
                 finalEdges.push(edge)
             }
         });
     });
 
-    console.log("sorted edges: ",finalEdges)
+    console.log("sorted edges: ", finalEdges)
 
     return finalEdges
 }
@@ -41917,12 +41954,21 @@ module.exports.recalculateGraph = function () {
     let nodeChanges = []
     completeEdges.clear()
     let counter = 0
-    console.log(nodes)
+
+    let wouldBeConflicts = {}
+    let idlist = nodes.getIds()
+
+    idlist.forEach(id => {
+        wouldBeConflicts[id] = {
+            inverse: 0,
+        }
+    });
+
     for (let i = 0; i < nodes.length; i++) {
         var cluster = nodes.get(i)
-        let wouldBeConflicts = 0
+
         for (let j = 0; j < nodes.length; j++) {
-            if (i !== j) {
+            if (i !== j && j > i) {
                 counter++
                 var clusterOther = nodes.get(j)
 
@@ -41943,17 +41989,32 @@ module.exports.recalculateGraph = function () {
                         real = true
                     } else if (result == 2) {
                         //would be conflict
-                        wouldBeConflicts++
+                        console.log(wouldBeConflicts[cluster.id][clusterOther.id])
+                            wouldBeConflicts[cluster.id] = {
+                                inverse: wouldBeConflicts[cluster.id].inverse + 1
+                            }
+
+
+                    } else if (result == 3) {
+                        //opposite would be conflict
+                            wouldBeConflicts[clusterOther.id] = { 
+                                inverse: wouldBeConflicts[clusterOther.id].inverse + 1 
+                            }
+                        
+
                     }
                     aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
                 }
 
             }
         }
-        if (cluster != null) {
-            nodeChanges.push({ id: cluster.id, inverse: wouldBeConflicts })
-        }
     }
+
+
+    idlist.forEach(idd => {
+        nodeChanges.push({ id: idd, inverse: wouldBeConflicts[idd].inverse })
+    });
+
 
     nodes.update(nodeChanges)
     completeEdges.add(aTest)
@@ -42026,15 +42087,18 @@ function readCase(name) {
 
 //1 a conflict
 //2 would be conflict
-//3 nothing
+//3 would be conflict opposite
+//4 nothing
 
 function caseOne(a, b) {
     if (a === true && b === true) {
         return 1
     } else if (a === false && b === true) {
         return 2
-    } else {
+    } else if (a === true && b === false) {
         return 3
+    } else {
+        return 4
     }
 }
 
@@ -42043,8 +42107,10 @@ function caseTwo(a, b) {
         return 1
     } else if (a === false && b === false) {
         return 2
-    } else {
+    } else if (a === true && b === true) {
         return 3
+    } else {
+        return 4
     }
 }
 
@@ -42053,8 +42119,10 @@ function caseThree(a, b) {
         return 1
     } else if (a === true && b === true) {
         return 2
-    } else {
+    } else if (a === false && b === false) {
         return 3
+    } else {
+        return 4
     }
 }
 
@@ -42063,8 +42131,10 @@ function caseFour(a, b) {
         return 1
     } else if (a === true && b === false) {
         return 2
-    } else {
+    } else if (a === false && b === true) {
         return 3
+    } else {
+        return 4
     }
 }
 
