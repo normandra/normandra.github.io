@@ -41596,7 +41596,8 @@ module.exports.showGraph = function () {
     };
     var options = {
         nodes: {
-            shape: 'dot'
+            shape: 'dot',
+            size: 25
         },
         physics: {
             enabled: true,
@@ -41622,10 +41623,10 @@ module.exports.showGraph = function () {
     });
 
     network.on("afterDrawing", function (ctx) {
-        ctx.font = "30px Arial";
+        ctx.font = "20px Arial";
         nodes.forEach(node => {
             var nodePosition = network.getPositions([node.id]);
-            ctx.fillText(node.inverse, nodePosition[node.id].x - 15, nodePosition[node.id].y - 30);
+            ctx.fillText((Math.round(node.value * 100) / 100+":"+node.inverse), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size/2);
         })
     });
 
@@ -41636,7 +41637,14 @@ module.exports.showGraph = function () {
         clickedNodes.forEach(node => {
             console.log(node.id + "," + node.label + "," + node.boolAns)
             newAns = !node.boolAns
-            nodes.update({ id: node.id, boolAns: newAns })
+            var ansColor
+
+            if(newAns){
+                ansColor = "#aec6cf"
+            }else{
+                ansColor = "#ff6961"
+            }
+            nodes.update({ id: node.id, boolAns: newAns, color:ansColor })
 
 
 
@@ -42135,7 +42143,12 @@ module.exports.visjs = function (jsonObject) {
         console.log(obj)
 
         // michael nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
-        nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 3 })
+        if(answer){
+            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#aec6cf" })
+        }else{
+            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
+        }
+
         a++
     }
 
