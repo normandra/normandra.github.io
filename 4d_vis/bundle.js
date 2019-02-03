@@ -41514,6 +41514,80 @@ var network
 
 var ruleList = {}
 
+var solThree
+var solFour
+
+var hardRule = `endogene Anforderung;vs.;endogene Anforderung;Fall 2*
+endogene Anforderung;vs.;exogene Anforderung;Fall 2*
+endogene Anforderung;vs.;Funktion;Fall 3*
+endogene Anforderung;vs.;Nutzungszweck;Fall 3*
+endogene Anforderung;vs.;Risiko;Fall 2*
+endogene Anforderung;vs.;Nebenfolge;Fall 3*
+exogene Anforderung;vs.;endogene Anforderung;Fall 3*
+exogene Anforderung;vs.;exogene Anforderung;Fall 2*
+exogene Anforderung;vs.;Funktion;Fall 3*
+exogene Anforderung;vs.;Nutzungszweck;Fall 3*
+exogene Anforderung;vs.;Risiko;Fall 4*
+exogene Anforderung;vs.;Nebenfolge;Fall 5*
+Funktion;vs.;endogene Anforderung;Fall 3*
+Funktion;vs.;exogene Anforderung;Fall 3*
+Funktion;vs.;Funktion;Fall 2*
+Funktion;vs.;Nutzungszweck;Fall 3*
+Funktion;vs.;Risiko;Fall 2*
+Funktion;vs.;Nebenfolge;Fall 1*
+Nutzungszweck;vs.;endogene Anforderung;Fall 2*
+Nutzungszweck;vs.;exogene Anforderung;Fall 2*
+Nutzungszweck;vs.;Funktion;Fall 2*
+Nutzungszweck;vs.;Nutzungszweck;Fall 1*
+Nutzungszweck;vs.;Risiko;Fall 1*
+Nutzungszweck;vs.;Nebenfolge;Fall 1*
+Risiko;vs.;endogene Anforderung;Fall 3*
+Risiko;vs.;exogene Anforderung;Fall 4*
+Risiko;vs.;Funktion;Fall 3*
+Risiko;vs.;Nutzungszweck;Fall 1*
+Risiko;vs.;Risiko;Fall 4*
+Risiko;vs.;Nebenfolge;Fall 2*
+Nebenfolge;vs.;endogene Anforderung;Fall 2*
+Nebenfolge;vs.;exogene Anforderung;Fall 5*
+Nebenfolge;vs.;Funktion;Fall 1*
+Nebenfolge;vs.;Nutzungszweck;Fall 1*
+Nebenfolge;vs.;Risiko;Fall 3*
+Nebenfolge;vs.;Nebenfolge;Fall 5*
+`
+
+
+module.exports.getSolution = function(number) {
+    fetch('https://4d-tool.ztg.tu-berlin.de/api/graphql', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+    body: JSON.stringify({query: `{
+            answers(where: { solution: "${number}" }) {
+            id
+            subcriterion {
+                id
+                name
+                label
+                criterion {
+                label
+                }
+                cluster {
+                id
+                }
+            }
+            booleanAnswer
+            }
+        }`})
+    })
+    .then(r => r.json())
+    .then(data => {
+        this.parseRule(hardRule)
+        this.visjs(data.data.answers)
+        });
+}
+
 
 var cleanDict = {
     "exogene Anforderung": 1,
@@ -41626,7 +41700,7 @@ module.exports.showGraph = function () {
         ctx.font = "20px Arial";
         nodes.forEach(node => {
             var nodePosition = network.getPositions([node.id]);
-            ctx.fillText((Math.round(node.value * 100) / 100+":"+node.inverse), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size/2);
+            ctx.fillText((node.inverse+" ("+Math.round(node.value * 100) / 100+")"), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
         })
     });
 
@@ -41635,12 +41709,12 @@ module.exports.showGraph = function () {
         var ids = properties.nodes;
         var clickedNodes = nodes.get(ids);
         clickedNodes.forEach(node => {
-            console.log(node.id + "," + node.label + "," + node.boolAns)
+            // console.log(node.id + "," + node.label + "," + node.boolAns)
             newAns = !node.boolAns
             var ansColor
 
             if(newAns){
-                ansColor = "#aec6cf"
+                ansColor = "#77dd77"
             }else{
                 ansColor = "#ff6961"
             }
@@ -41746,8 +41820,8 @@ module.exports.showGraph = function () {
                         }
                     }
                 }
-                console.log(aTest)
-                console.log(seenConflicts)
+                // console.log(aTest)
+                // console.log(seenConflicts)
                 let counter = 0
                 aTest.forEach(edge => {
                     if ((edge.to == changedCluster.id || edge.from == changedCluster.id) && edge.actual) {
@@ -41767,7 +41841,7 @@ module.exports.showGraph = function () {
                 if (!edge.actual) {
                     conf.push({ id: edge.id, color: { color: "#ccc" } })
                 } else {
-                    conf.push({ id: edge.id, color: { color: "red" }, value: 15 })
+                    conf.push({ id: edge.id, color: { color: "red" } })
                 }
             })
 
@@ -41783,7 +41857,7 @@ module.exports.showComplete = function () {
 
     // create a network
     completeEdges.forEach(edge => {
-        atest.push({ id: edge.id, color: { color: "#ccc" }, value: undefined })
+        atest.push({ id: edge.id, color: { color: "#ccc" }, width: 1 })
     })
 
     nodes.forEach(node => {
@@ -41803,9 +41877,9 @@ module.exports.showConflictsFast = function () {
 
     completeEdges.forEach(edge => {
         if (!edge.actual) {
-            aTest.push({ id: edge.id, color: { color: "#ccc" } })
+            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
         } else {
-            aTest.push({ id: edge.id, color: { color: "red" }, value: 15 })
+            aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
         }
     })
 
@@ -41970,8 +42044,8 @@ module.exports.sortEdges = function () {
         return (nodes.get(b.from).value + nodes.get(b.to).value) - (nodes.get(a.from).value + nodes.get(a.to).value)
     })
 
-    console.log(toSort)
-    console.log(nodes)
+    // console.log(toSort)
+    // console.log(nodes)
     return toSort
 }
 
@@ -41987,7 +42061,7 @@ module.exports.sortNodes = function () {
         return (nodes.get(b).value) - (nodes.get(a).value)
     })
 
-    console.log("sorted nodes", toSort)
+    // console.log("sorted nodes", toSort)
 
     toSort.forEach(node => {
         edgeList.forEach(edge => {
@@ -41998,7 +42072,7 @@ module.exports.sortNodes = function () {
         });
     });
 
-    console.log("sorted edges: ", finalEdges)
+    // console.log("sorted edges: ", finalEdges)
 
     return finalEdges
 }
@@ -42044,7 +42118,7 @@ module.exports.recalculateGraph = function () {
                         real = true
                         seenConflicts.push(hashKriteria(cluster.id, clusterOther.id))
                     }
-                    aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' } })
+                    aTest.push({ id: counter, actual: real, from: i, to: j, color: { color: '#cccccc' }, width: 1 })
                 }
             }
         }
@@ -42103,8 +42177,8 @@ module.exports.recalculateGraph = function () {
                 }
             }
         }
-        console.log(aTest)
-        console.log(seenConflicts)
+        // console.log(aTest)
+        // console.log(seenConflicts)
         let counter = 0
         aTest.forEach(edge => {
             if ((edge.to == changedCluster.id || edge.from == changedCluster.id) && edge.actual) {
@@ -42122,7 +42196,12 @@ module.exports.recalculateGraph = function () {
 
 //cluster 1: zweck der sl ; 2: infrak vor. ; 3 norm ; 4+ : unused
 module.exports.visjs = function (jsonObject) {
-    jsonObject = JSON.parse(jsonObject)
+
+    nodes.clear()
+    edges.clear()
+    completeEdges.clear()
+
+    jsonObject = JSON.parse(JSON.stringify(jsonObject))
 
     let a = 0
 
@@ -42130,6 +42209,7 @@ module.exports.visjs = function (jsonObject) {
     for (let i = 0; i < jsonObject.length; i++) {
         var obj = jsonObject[i];
 
+        // console.log(obj)
         if (obj.subcriterion.cluster.id == null) {
             continue;
         }
@@ -42140,13 +42220,13 @@ module.exports.visjs = function (jsonObject) {
         } */
         var answer = obj.booleanAnswer
 
-        console.log(obj)
+        // console.log(obj)
 
         // michael nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
         if(answer){
-            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#aec6cf" })
+            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name , label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#77dd77" })
         }else{
-            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label, cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
+            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
         }
 
         a++
@@ -42155,7 +42235,7 @@ module.exports.visjs = function (jsonObject) {
     this.recalculateGraph()
 
 
-    console.log(edges.length)
+    // console.log(edges.length)
     this.showGraph()
 }
 
@@ -42172,7 +42252,11 @@ module.exports.parseRule = function (rule) {
     // console.log(b(true,true))
     //krit 1 on [0] krit 2 on [2] case on [3]
 
-    console.log(ruleList["1,2"])
+    // console.log(ruleList["1,2"])
+}
+
+module.exports.parseFetched = function () {
+    this.visjs(fetchedJson)
 }
 
 function readCase(name) {
