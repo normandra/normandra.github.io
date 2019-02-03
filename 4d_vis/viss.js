@@ -337,9 +337,9 @@ module.exports.showGraph = function () {
 
             completeEdges.forEach(edge => {
                 if (!edge.actual) {
-                    conf.push({ id: edge.id, color: { color: "#ccc" } })
+                    aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
                 } else {
-                    conf.push({ id: edge.id, color: { color: "red" } })
+                    aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
                 }
             })
 
