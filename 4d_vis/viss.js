@@ -10,6 +10,8 @@ var simulatorEdges = new vis.DataSet()
 var completeEdges = new vis.DataSet()
 var network
 
+var totalConflicts = 0
+
 var ruleList = {}
 
 var solThree
@@ -198,7 +200,22 @@ module.exports.showGraph = function () {
         ctx.font = "20px Arial";
         nodes.forEach(node => {
             var nodePosition = network.getPositions([node.id]);
-            ctx.fillText((node.inverse+" ("+Math.round(node.value * 100) / 100+")"), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
+            var currentEdges = network.getConnectedEdges(node.id).length;
+            var conflictEdges = 0
+
+            network.getConnectedEdges(node.id).forEach(element => {
+                var toLook = completeEdges.get(element)
+                if(toLook && toLook.actual){
+                    conflictEdges += 1;
+                }
+            });
+
+            // console.log("inverse:" + node.inverse + " conflicts:" + currentEdges)
+
+            var koeffizienten = node.inverse / conflictEdges;
+            var alternative = (totalConflicts - (conflictEdges - node.inverse)) / totalConflicts
+
+            ctx.fillText((node.inverse+" ("+Math.round(node.value * 100) / 100+") " + "(" + koeffizienten + ")"), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
         })
     });
 
@@ -345,6 +362,20 @@ module.exports.showGraph = function () {
 
             completeEdges.update(conf)
 
+        })
+
+        totalConflicts = 0
+        nodes.forEach(node => {
+            var conflictEdges = 0
+            network.getConnectedEdges(node.id).forEach(element => {
+                var toLook = completeEdges.get(element)
+                if(toLook && toLook.actual){
+                    conflictEdges += 1;
+                }
+            });
+          
+            totalConflicts += conflictEdges;
+    
         })
     });
 }
@@ -689,6 +720,19 @@ module.exports.recalculateGraph = function () {
     nodes.update(updateInverse)
 
 
+    totalConflicts = 0
+    nodes.forEach(node => {
+        var conflictEdges = 0
+        network.getConnectedEdges(node.id).forEach(element => {
+            var toLook = completeEdges.get(element)
+            if(toLook && toLook.actual){
+                conflictEdges += 1;
+            }
+        });
+      
+        totalConflicts += conflictEdges;
+
+    })
 
 }
 
