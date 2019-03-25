@@ -41961,11 +41961,17 @@ module.exports.showNonValidated = function () {
     var aTest = []
 
     completeEdges.forEach(edge => {
+        
+        var from = nodes.get(edge.from).subcriterionId
+        var to = nodes.get(edge.to).subcriterionId
+        var key = from + "-" + to
 
         if (!edge.actual) {
             aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
-        } else {
+        } else if(validatedList.includes(key)){
             aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
+        }else{
+            aTest.push({ id: edge.id, color: { color: "blue" } , width: 5})
         }
     })
 
