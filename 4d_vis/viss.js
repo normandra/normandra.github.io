@@ -14,8 +14,7 @@ var totalConflicts = 0
 
 var ruleList = {}
 
-var solThree
-var solFour
+var validatedList = []
 
 var hardRule = `endogene Anforderung;vs.;endogene Anforderung;Fall 2*
 endogene Anforderung;vs.;exogene Anforderung;Fall 2*
@@ -79,15 +78,43 @@ module.exports.getSolution = function(number) {
             }
             booleanAnswer
             }
+            conflicts(where: { solution: "${number}" }) {
+                conflictList
+                validationList
+              }
         }`})
     })
     .then(r => r.json())
     .then(data => {
         this.parseRule(hardRule)
+        this.saveValidated(data.data.conflicts[0])
         this.visjs(data.data.answers)
         });
 }
 
+
+module.exports.saveValidated = function(validationList) {
+    validationList.validationList.validations.forEach(element => {
+        var conflictId = element.id
+        var conflictElement = validationList.conflictList.conflicts.find(function(element) {
+            return element.id = conflictId;
+        });
+
+        console.log(validationList.conflictList)
+        console.log(conflictId)
+        console.log(conflictElement)
+
+        var from = conflictElement.from.subcriterionId
+        var to = conflictElement.to.subcriterionId
+
+        var key = from + "-" + to
+
+        if (element.validation.accepted.length > 0) {
+            validatedList.push(key)
+        }
+
+    });
+}
 
 var cleanDict = {
     "exogene Anforderung": 1,
@@ -405,7 +432,11 @@ module.exports.showConflictsFast = function () {
     var aTest = []
 
     completeEdges.forEach(edge => {
-        if (!edge.actual) {
+        var from = edge.from.subcriterionId
+        var to = edge.to.subcriterionId
+        var key = from + "-" + to
+
+        if (!edge.actual || !validatedList.includes(key)) {
             aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
         } else {
             aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
