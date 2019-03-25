@@ -18,12 +18,12 @@
 <body>
     <div id="mynetwork"></div>
 
-    <input type="number" id="tentacles" name="tentacles" min="3" max="4" onchange="javascript:parseJson.getSolution(tentacles.value)">
+    <input type="number" id="tentacles" name="tentacles" onchange="javascript:parseJson.getSolution(tentacles.value)">
 
     <input type="button" onclick="javascript:parseJson.showGraph()" name="complete" id="complete" value="draw">
     <input type="button" onclick="javascript:parseJson.showComplete()" name="complete" id="complete" value="complete graph">
-    <input type="button" onclick="javascript:parseJson.showConflictsFast()" name="conf" id="conf" value="conflict graph fast">
-    <input type="button" onclick="javascript:parseJson.filterValidation()" name="conf" id="conf" value="validated only">
+    <input type="button" onclick="javascript:parseJson.showConflictsFast()" name="conf" id="conf" value="conflict graph">
+    <input type="button" onclick="javascript:parseJson.showNonValidated()" name="conf" id="conf" value="conflict graph no validation">
     <input type="button" onclick="javascript:parseJson.cenBetween()" name="conf" id="conf" value="betweeness">
     <input type="button" onclick="javascript:parseJson.cenBetweenOverall()" name="conf" id="conf" value="betweeness overall">
     <input type="button" onclick="javascript:parseJson.cenDegree()" name="conf" id="conf" value="degree">

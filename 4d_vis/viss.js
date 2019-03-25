@@ -97,12 +97,13 @@ module.exports.saveValidated = function(validationList) {
     validationList.validationList.validations.forEach(element => {
         var conflictId = element.id
         var conflictElement = validationList.conflictList.conflicts.find(function(element) {
-            return element.id = conflictId;
+            return element.id == conflictId;
         });
 
-        console.log(validationList.conflictList)
-        console.log(conflictId)
-        console.log(conflictElement)
+        // console.log(conflictElement)
+        // console.log(validationList.conflictList)
+        // console.log(conflictId)
+        // console.log(conflictElement)
 
         var from = conflictElement.from.subcriterionId
         var to = conflictElement.to.subcriterionId
@@ -114,6 +115,8 @@ module.exports.saveValidated = function(validationList) {
         }
 
     });
+
+    console.log(validatedList)
 }
 
 var cleanDict = {
@@ -380,30 +383,34 @@ module.exports.showGraph = function () {
             var conf = []
 
             completeEdges.forEach(edge => {
-                if (!edge.actual) {
+                var from = nodes.get(edge.from).subcriterionId
+                var to = nodes.get(edge.to).subcriterionId
+                var key = from + "-" + to
+        
+                if (!edge.actual || !validatedList.includes(key)) {
                     conf.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
                 } else {
                     conf.push({ id: edge.id, color: { color: "red" } , width: 5})
                 }
             })
-
+        
             completeEdges.update(conf)
 
         })
 
-        totalConflicts = 0
-        nodes.forEach(node => {
-            var conflictEdges = 0
-            network.getConnectedEdges(node.id).forEach(element => {
-                var toLook = completeEdges.get(element)
-                if(toLook && toLook.actual){
-                    conflictEdges += 1;
-                }
-            });
+        // totalConflicts = 0
+        // nodes.forEach(node => {
+        //     var conflictEdges = 0
+        //     network.getConnectedEdges(node.id).forEach(element => {
+        //         var toLook = completeEdges.get(element)
+        //         if(toLook && toLook.actual){
+        //             conflictEdges += 1;
+        //         }
+        //     });
           
-            totalConflicts += conflictEdges;
+        //     totalConflicts += conflictEdges;
     
-        })
+        // })
     });
 }
 
@@ -432,11 +439,28 @@ module.exports.showConflictsFast = function () {
     var aTest = []
 
     completeEdges.forEach(edge => {
-        var from = edge.from.subcriterionId
-        var to = edge.to.subcriterionId
+        var from = nodes.get(edge.from).subcriterionId
+        var to = nodes.get(edge.to).subcriterionId
         var key = from + "-" + to
 
         if (!edge.actual || !validatedList.includes(key)) {
+            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
+        } else {
+            aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
+        }
+    })
+
+    completeEdges.update(aTest)
+
+}
+
+module.exports.showNonValidated = function () {
+    // create a network
+    var aTest = []
+
+    completeEdges.forEach(edge => {
+
+        if (!edge.actual) {
             aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
         } else {
             aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
@@ -751,19 +775,19 @@ module.exports.recalculateGraph = function () {
     nodes.update(updateInverse)
 
 
-    totalConflicts = 0
-    nodes.forEach(node => {
-        var conflictEdges = 0
-        network.getConnectedEdges(node.id).forEach(element => {
-            var toLook = completeEdges.get(element)
-            if(toLook && toLook.actual){
-                conflictEdges += 1;
-            }
-        });
+    // totalConflicts = 0
+    // nodes.forEach(node => {
+    //     var conflictEdges = 0
+    //     network.getConnectedEdges(node.id).forEach(element => {
+    //         var toLook = completeEdges.get(element)
+    //         if(toLook && toLook.actual){
+    //             conflictEdges += 1;
+    //         }
+    //     });
       
-        totalConflicts += conflictEdges;
+    //     totalConflicts += conflictEdges;
 
-    })
+    // })
 
 }
 
