@@ -54,6 +54,11 @@ Nebenfolge;vs.;Risiko;Fall 3*
 Nebenfolge;vs.;Nebenfolge;Fall 5*
 `
 
+edgekey = function(edge){
+    var from = nodes.get(edge.from).subcriterionId
+    var to = nodes.get(edge.to).subcriterionId
+    return from + "-" + to
+}
 
 module.exports.getSolution = function(number) {
     fetch('https://4d-tool.ztg.tu-berlin.de/api/graphql', {
@@ -439,9 +444,7 @@ module.exports.showConflictsFast = function () {
     var aTest = []
 
     completeEdges.forEach(edge => {
-        var from = nodes.get(edge.from).subcriterionId
-        var to = nodes.get(edge.to).subcriterionId
-        var key = from + "-" + to
+        var key = edgekey(edge)
 
         if (!edge.actual || !validatedList.includes(key)) {
             aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
@@ -459,10 +462,7 @@ module.exports.showNonValidated = function () {
     var aTest = []
 
     completeEdges.forEach(edge => {
-        
-        var from = nodes.get(edge.from).subcriterionId
-        var to = nodes.get(edge.to).subcriterionId
-        var key = from + "-" + to
+        var key = edgekey(edge)
 
         if (!edge.actual) {
             aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
@@ -506,7 +506,10 @@ module.exports.cenBetween = function () {
     g.clear()
 
     completeEdges.forEach(edge => {
-        if (edge.actual) {
+
+        var key = edgekey(edge)
+
+        if (edge.actual && validatedList.includes(key)) {
             g.addLink(edge.from, edge.to)
         }
     })
