@@ -167,8 +167,9 @@ module.exports.focusOnNode = function (id,level) {
     var nodesToShow = []
     var idList = [id]
     var visited = []
+    var nextLevel = []
 
-    for (let cL = 0; cL < level - 1; cL++){
+    for (let cL = 0; cL < level; cL++){
         for (let count = 0; count < idList.length; count++) {
             id = idList.shift()
             visited.push(id)
@@ -181,23 +182,18 @@ module.exports.focusOnNode = function (id,level) {
                 // visit the node if its unvisited
                 if (validatedList.includes(key)){
                     if (!visited.includes(edge.to)){
-                        idList.push(edge.to)
+                        nextLevel.push(edge.to)
                     }
 
                     if (!visited.includes(edge.from)){
-                        idList.push(edge.from)
+                        nextLevel.push(edge.from)
                     }
 
                 }
             }
-
         }
-    }
-
-    var edgesList = network.getConnectedEdges(id)
-    for (let i = 0; i < edgesList.length; i++) {
-        edge = completeEdges.get(edgesList[i])
-        edgeConsideration.push(edgekey(edge))
+        idList.push(...nextLevel)
+        nextLevel = []
     }
 
     completeEdges.forEach(edge => {
@@ -544,9 +540,9 @@ module.exports.showConflictsFast = function () {
         var key = edgekey(edge)
 
         if (!edge.actual || !validatedList.includes(key)) {
-            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1})
+            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1, hidden: false})
         } else {
-            aTest.push({ id: edge.id, color: { color: "red" } , width: 5})
+            aTest.push({ id: edge.id, color: { color: "red" } , width: 5, hidden: false})
         }
     })
 
