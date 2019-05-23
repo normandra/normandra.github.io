@@ -165,6 +165,34 @@ module.exports.focusOnNode = function (id,level) {
     var aTest = []
     var bTest = []
     var nodesToShow = []
+    var idList = [id]
+    var visited = []
+
+    for (let cL = 0; cL < level - 1; cL++){
+        for (let count = 0; count < idList.length; count++) {
+            id = idList.shift()
+            visited.push(id)
+            var edgesList = network.getConnectedEdges(id)
+            for (let i = 0; i < edgesList.length; i++) {
+                edge = completeEdges.get(edgesList[i])   
+                key = edgekey(edge)
+                edgeConsideration.push(key)
+
+                // visit the node if its unvisited
+                if (validatedList.includes(key)){
+                    if (!visited.includes(edge.to)){
+                        idList.push(edge.to)
+                    }
+
+                    if (!visited.includes(edge.from)){
+                        idList.push(edge.from)
+                    }
+
+                }
+            }
+
+        }
+    }
 
     var edgesList = network.getConnectedEdges(id)
     for (let i = 0; i < edgesList.length; i++) {
@@ -193,9 +221,9 @@ module.exports.focusOnNode = function (id,level) {
 
     nodes.forEach(node => {
         if (!nodesToShow.includes(node.id)){
-            bTest.push({ id: node.id, hidden: true})
+            bTest.push({ id: node.id, color: "#ccc"})
         } else {
-            bTest.push({ id: node.id, hidden: false})
+            // bTest.push({ id: node.id, hidden: false})
         }
 
     })
