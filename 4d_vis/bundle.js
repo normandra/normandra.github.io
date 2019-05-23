@@ -41507,7 +41507,6 @@ var renderGraph = require('ngraph.pixel');
 
 //generate nodes
 var nodes = new vis.DataSet()
-var edges = new vis.DataSet()
 var simulatorEdges = new vis.DataSet()
 var completeEdges = new vis.DataSet()
 var network
@@ -41661,6 +41660,52 @@ function getNumber(string, defaultValue) {
     return (typeof number === 'number') && !isNaN(number) ? number : (defaultValue || 10);
 }
 
+module.exports.focusOnNode = function (id,level) {
+    //assume its only one 
+
+    var edgeConsideration = []
+    var aTest = []
+    var bTest = []
+    var nodesToShow = []
+
+    var edgesList = network.getConnectedEdges(id)
+    for (let i = 0; i < edgesList.length; i++) {
+        edge = completeEdges.get(edgesList[i])
+        edgeConsideration.push(edgekey(edge))
+    }
+
+    completeEdges.forEach(edge => {
+        var key = edgekey(edge)
+
+        if (!edge.actual || !validatedList.includes(key) || !edgeConsideration.includes(key)) {
+            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1, hidden: true})
+        } else {
+            aTest.push({ id: edge.id, color: { color: "red" } , width: 5, hidden: false})
+
+            if (!nodesToShow.includes(edge.to)){
+                nodesToShow.push(edge.to)
+            }
+    
+            if (!nodesToShow.includes(edge.from)){
+                nodesToShow.push(edge.from)
+            }
+
+        }
+    })
+
+    nodes.forEach(node => {
+        if (!nodesToShow.includes(node.id)){
+            bTest.push({ id: node.id, hidden: true})
+        } else {
+            bTest.push({ id: node.id, hidden: false})
+        }
+
+    })
+
+    completeEdges.update(aTest)
+    nodes.update(bTest)
+}
+
 module.exports.threed = function () {
     conf = []
 
@@ -41706,6 +41751,12 @@ module.exports.showGraph = function () {
         edges: completeEdges
     };
     var options = {
+        interaction:{
+            hover:true
+        },
+        manipulation: {
+            enabled: true
+        },
         nodes: {
             shape: 'dot',
             size: 25
@@ -41733,6 +41784,14 @@ module.exports.showGraph = function () {
         network.setOptions({ physics: false });
     });
 
+    network.on("hoverNode", function (params) {
+
+    });
+
+    // network.on("showPopup", function (params) {
+    //     document.getElementById('eventSpan').innerHTML = '<h2>showPopup event: </h2>' + JSON.stringify(params, null, 4);
+    // });
+
     network.on("afterDrawing", function (ctx) {
         ctx.font = "20px Arial";
         nodes.forEach(node => {
@@ -41752,7 +41811,10 @@ module.exports.showGraph = function () {
             var koeffizienten = node.inverse / conflictEdges;
             var alternative = (totalConflicts - (conflictEdges - node.inverse)) / totalConflicts
 
-            ctx.fillText((node.inverse+" ("+Math.round(node.value * 100) / 100+") " + "(" + koeffizienten + ")"), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
+            // ctx.fillText((node.inverse+" ("+Math.round(node.value * 100) / 100+") " + "(" + koeffizienten + ")"), nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
+            if (!node.hidden){
+                ctx.fillText( koeffizienten , nodePosition[node.id].x - node.size/2, nodePosition[node.id].y -node.size*2);
+            }
         })
     });
 
@@ -41762,6 +41824,15 @@ module.exports.showGraph = function () {
         var clickedNodes = nodes.get(ids);
         clickedNodes.forEach(node => {
             // console.log(node.id + "," + node.label + "," + node.boolAns)
+            
+            let nShape
+
+            if(node.shape == 'dot' || node.shape == undefined){
+                nShape = 'box'
+            }else{
+                nShape = 'dot'
+            }
+
             newAns = !node.boolAns
             var ansColor
 
@@ -41770,9 +41841,7 @@ module.exports.showGraph = function () {
             }else{
                 ansColor = "#ff6961"
             }
-            nodes.update({ id: node.id, boolAns: newAns, color:ansColor })
-
-
+            nodes.update({ id: node.id, boolAns: newAns, color:ansColor, shape:nShape })
 
             let aTest = []
             let nodeChanges = []
@@ -42306,7 +42375,6 @@ module.exports.recalculateGraph = function () {
 module.exports.visjs = function (jsonObject) {
 
     nodes.clear()
-    edges.clear()
     completeEdges.clear()
 
     jsonObject = JSON.parse(JSON.stringify(jsonObject))
@@ -42332,9 +42400,9 @@ module.exports.visjs = function (jsonObject) {
 
         // michael nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
         if(answer){
-            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name , label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#77dd77" })
+            nodes.add({ id: a, title: obj.subcriterion.name ,subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name , label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#77dd77" })
         }else{
-            nodes.add({ id: a, subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
+            nodes.add({ id: a, title: obj.subcriterion.name ,subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
         }
 
         a++
@@ -42449,6 +42517,8 @@ function hashKriteria(a, b) {
 var naiveReverse = function (string) {
     return string.split('').reverse().join('');
 }
+
+
 
 // console.log(network.getConnectedNodes(2).length)
 },{"ngraph.centrality":3,"ngraph.graph":17,"ngraph.pixel":27}]},{},[56])(56)
