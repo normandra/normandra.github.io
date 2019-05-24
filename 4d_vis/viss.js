@@ -167,6 +167,7 @@ module.exports.focusOnNode = function (id,level) {
     var nodesToShow = []
     var idList = [id]
     var visited = []
+    var visitedEdge = []
     var nextLevel = []
 
     for (let cL = 0; cL < level; cL++){
@@ -175,21 +176,23 @@ module.exports.focusOnNode = function (id,level) {
             visited.push(id)
             var edgesList = network.getConnectedEdges(id)
             for (let i = 0; i < edgesList.length; i++) {
-                edge = completeEdges.get(edgesList[i])   
+                edge = completeEdges.get(edgesList[i])
                 key = edgekey(edge)
                 edgeConsideration.push(key)
 
-                // visit the node if its unvisited
+                // visit the edge if its unvisited
                 if (validatedList.includes(key)){
-                    if (!visited.includes(edge.to)){
-                        nextLevel.push(edge.to)
+                    if (!visitedEdge.includes(edge.id)){
+                        if (!visited.includes(edge.to)){
+                            nextLevel.push(edge.to)
+                        }
+    
+                        if (!visited.includes(edge.from)){
+                            nextLevel.push(edge.from)
+                        }
                     }
-
-                    if (!visited.includes(edge.from)){
-                        nextLevel.push(edge.from)
-                    }
-
                 }
+                visitedEdge.push(edge.id)
             }
         }
         idList.push(...nextLevel)
@@ -200,7 +203,7 @@ module.exports.focusOnNode = function (id,level) {
         var key = edgekey(edge)
 
         if (!edge.actual || !validatedList.includes(key) || !edgeConsideration.includes(key)) {
-            aTest.push({ id: edge.id, color: { color: "#ccc" } , width: 1, hidden: true})
+            aTest.push({ id: edge.id, color: { color: "rgba(200,200,200,0.5)" } , width: 1, hidden: true})
         } else {
             aTest.push({ id: edge.id, color: { color: "red" } , width: 5, hidden: false})
 
@@ -217,7 +220,7 @@ module.exports.focusOnNode = function (id,level) {
 
     nodes.forEach(node => {
         if (!nodesToShow.includes(node.id)){
-            bTest.push({ id: node.id, color: "#ccc"})
+            bTest.push({ id: node.id, color: "rgba(200,200,200,0.5)"})
         } else {
             // bTest.push({ id: node.id, hidden: false})
         }
@@ -921,10 +924,23 @@ module.exports.visjs = function (jsonObject) {
         // console.log(obj)
 
         // michael nodes.add({ id: a, name: obj.name, label: obj.label, cluster: dict[obj.cluster.name], boolAns: answer, value: 3 })
+        let nodeToAdd = {
+            id: a,
+            label: obj.subcriterion.label,
+            subcriterionId: obj.subcriterion.id,
+            name: obj.subcriterion.name ,
+            title: "<b>" + obj.subcriterion.label + " ("+obj.subcriterion.criterion.label+")</b><br>" + obj.subcriterion.booleanQuestion + " <br>Antwort: <b>" + (answer ? " Ja" : " Nein") + "</b>",
+            cluster: obj.subcriterion.cluster.id,
+            boolAns: answer,
+            value: 1,
+            size: 25
+        }
         if(answer){
-            nodes.add({ id: a, title: obj.subcriterion.name ,subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name , label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#77dd77" })
+            nodeToAdd.color = "#77dd77"
+            nodes.add(nodeToAdd)
         }else{
-            nodes.add({ id: a, title: obj.subcriterion.name ,subcriterionId: obj.subcriterion.id, name: obj.subcriterion.name, label: obj.subcriterion.label+ " ("+obj.subcriterion.criterion.label+")", cluster: obj.subcriterion.cluster.id, boolAns: answer, value: 1, size: 25, color: "#ff6961" })
+            nodeToAdd.color = "#ff6961"
+            nodes.add(nodeToAdd)
         }
 
         a++
